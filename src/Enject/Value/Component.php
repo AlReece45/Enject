@@ -2,20 +2,20 @@
 
 require_once 'Enject/Value.php';
 
-class Enject_Value_Service
+class Enject_Value_Component
 	implements Enject_Value
 {
 	/**
 	 * @var String
 	 */
-	protected $_service;
+	protected $_name;
 
 	/**
 	 * @return String
 	 */
-	function getService()
+	function getName()
 	{
-		return $this->_service;
+		return $this->_name;
 	}
 
 	/**
@@ -28,12 +28,12 @@ class Enject_Value_Service
 	}
 
 	/**
-	 * @param String $service
-	 * @return Enject_Value_Service
+	 * @param String $component
+	 * @return Enject_Value_Component
 	 */
-	function setService($service)
+	function setName($name)
 	{
-		$this->_service = $service;
+		$this->_name = $name;
 		return $this;
 	}
 
@@ -43,6 +43,6 @@ class Enject_Value_Service
 	 */
 	function resolve(Enject_Container $container)
 	{
-		return $container->resolveService($this->getService());
+		return $container->resolveComponent($this->getName());
 	}
 }

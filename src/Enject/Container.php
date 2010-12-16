@@ -3,15 +3,15 @@
 class Enject_Container
 {
 	/**
-	 * Available (registered) services
+	 * Available (registered) components
 	 * @var Mixed[]
-	 * @see getService()
-	 * @see registerService()
+	 * @see getComponent()
+	 * @see registerComponent()
 	 */
-	protected $_services = array();
+	protected $_components = array();
 
 	/**
-	 * Available (registered) services
+	 * Available (registered) components
 	 * @var Enject_Target[]
 	 * @see getTarget()
 	 * @see registerTarget()
@@ -19,26 +19,26 @@ class Enject_Container
 	protected $_targets = array();
 
 	/**
-	 * Available (registered) services
+	 * Available (registered) components
 	 * @var Mixed[]
-	 * @see getService()
-	 * @see registerService()
+	 * @see getComponent()
+	 * @see registerComponent()
 	 */
 	protected $_types = array();
 
 	/**
-	 * Resolves the types that a service uses
-	 * @param String $service
+	 * Resolves the types that a component uses
+	 * @param String $component
 	 * @uses $_types
 	 */
-	protected function _registerService($service)
+	protected function _registerComponent($component)
 	{
 		require_once 'Enject/Tools.php';
-		foreach(Enject_Tools::getTypes($service) as $type)
+		foreach(Enject_Tools::getTypes($component) as $type)
 		{
 			if(!isset($this->_types[$type]))
 			{
-				$this->_types[$type] = $service;
+				$this->_types[$type] = $component;
 			}
 		}
 	}
@@ -47,7 +47,7 @@ class Enject_Container
 	 * Returns an object builder.
 	 *
 	 * Builders are not explicity shared, however you can assign a builder to
-	 * a service and the object will be built when the service is requested
+	 * a component and the object will be built when the component is requested
 	 * @param String $className
 	 * @return Enject_Builder_Default
 	 */
@@ -159,11 +159,11 @@ class Enject_Container
 	 * @param String $name
 	 * @return Mixed
 	 * @throws Enject_Exception
-	 * @uses $_services
+	 * @uses $_components
 	 */
-	function getService($name)
+	function getComponent($name)
 	{
-		return $this->getInstance('Enject_Value_Service')->setService($name);
+		return $this->getInstance('Enject_Value_Component')->setComponent($name);
 	}
 
 	/**
@@ -188,7 +188,7 @@ class Enject_Container
 	 * @param String $name
 	 * @return Mixed
 	 * @throws Enject_Exception
-	 * @uses $_services
+	 * @uses $_components
 	 */
 	function getType($name)
 	{
@@ -196,18 +196,18 @@ class Enject_Container
 	}
 
 	/**
-	 * Registers a service (an easily reusable injection object)
+	 * Registers a component (an easily reusable injection object)
 	 * @param String $name
-	 * @param Mixed $service
+	 * @param Mixed $component
 	 * @return Enject_Factory
-	 * @see getService()
-	 * @uses _registerService()
-	 * @uses $_services
+	 * @see getComponent()
+	 * @uses _registerComponent()
+	 * @uses $_components
 	 */
-	function registerService($name, $service)
+	function registerComponent($name, $component)
 	{
-		$this->_services[$name] = $service;
-		$this->_registerService($service);
+		$this->_components[$name] = $component;
+		$this->_registerComponent($component);
 		return $this;
 	}
 
@@ -225,13 +225,13 @@ class Enject_Container
 	}
 
 	/**
-	 * Forces $service to act for $type
+	 * Forces $component to act for $type
 	 *
 	 * <p>Anyone overriding this method may need to be also override
-	 * _registerService() because it uses checks this property directly/p>
+	 * _registerComponent() because it uses checks this property directly/p>
 	 * @param String $type
-	 * @param Mixed $service
-	 * @see getServiceByType()
+	 * @param Mixed $component
+	 * @see getComponentByType()
 	 * @uses $_types
 	 * @return Enject_Factory
 	 */
@@ -245,17 +245,17 @@ class Enject_Container
 	 * @param String $name
 	 * @return Mixed
 	 * @throws Enject_Exception
-	 * @uses $_services
+	 * @uses $_components
 	 */
-	function resolveService($name)
+	function resolveComponent($name)
 	{
 		$name = strtolower($name);
-		if(!isset($this->_services[$name]))
+		if(!isset($this->_components[$name]))
 		{
 			require_once 'Enject/Exception.php';
-			throw new Enject_Exception("Service [$name] unavailable");
+			throw new Enject_Exception("Component [$name] unavailable");
 		}
-		return $this->_services[$name];
+		return $this->_components[$name];
 	}
 
 	/**
