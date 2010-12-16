@@ -15,6 +15,19 @@ class Enject_Value_Builder
 	 * @var String
 	 */
 	protected $_className;
+	
+	/**
+	 * If there is an instance of the object, and the object is shared. This
+	 * is set to the shared instance of the object.
+	 * @var Mixed
+	 */
+	protected $_instance;
+
+	/**
+	 * Whether or not the object is shared (an instance will be reused)
+	 * @var <type>
+	 */
+	protected $_shared = false;
 
 	/**
 	 * Adds an injection (a method call with parameters)
@@ -125,15 +138,36 @@ class Enject_Value_Builder
 	}
 
 	/**
+	 * @param <type> $shared
+	 * @return Enject_Value_Builder
+	 */
+	function setShared($shared = true)
+	{
+		$this->_shared = $shared;
+		return $this;
+	}
+
+	/**
 	 * @return Mixed
 	 * @uses getInjections()
 	 * @uses Enject_Tools::inject()
 	 */
 	function resolve(Enject_Container $container)
 	{
-		require_once 'Enject/Tools.php';
-		$object = $container->getInstance($this->getClassname());
-		$object = Enject_Tools::inject($object, $this->getInjections($container));
+		if($this->_shared && $this->_instance)
+		{
+			$return = $this->_instance;
+		}
+		else
+		{
+			require_once 'Enject/Tools.php';
+			$return = $container->getInstance($this->getClassname());
+			$return = Enject_Tools::inject($return, $this->getInjections($container));
+			if($this->_shared)
+			{
+				$this->_instance = $return;
+			}
+		}
 		return $object;
 	}
 }
