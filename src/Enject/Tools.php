@@ -1,5 +1,18 @@
 <?php
+/*
+ * Enject Library
+ * Copyright 2010 Alexander Reece
+ * Licensed under: GNU Lesser Public License 2.1 or later
+ *//**
+ * @author Alexander Reece <alreece45@gmail.com>
+ * @copyright 2010 (c) Alexander Reece
+ * @license http://www.opensource.org/licenses/lgpl-2.1.php
+ * @package Enject
+ */
 
+/**
+ * Methods that are used in several different classes
+ */
 class Enject_Tools
 {
 	/**
@@ -15,35 +28,43 @@ class Enject_Tools
 		$parameters
 	)
 	{
+		$parameterValues = array_values($parameters);
 		// if the array is a "perfect" numerically indexed array
 		// assume this is expected and simply use it
-		if(array_values($parameters) == $parameters)
+		if($parameterValues == $parameters)
 		{
-			return $parameters;
+			$return = $parameters;
 		}
-		
-		$return = array();
-		// emulate case-insenstivity (as method names and classs names are not
-		// case sensitive). Keep the case-insensitive consistancy. 
-		$parameters = array_change_key_case($parameters, CASE_LOWER);
-
-		// finally, do the main loop.
-		foreach($method->getParameters() as $parameter)
+		elseif(!isset($parameterValues[1]))
 		{
-			// emulate case-insensitivity
-			$parameterName = strtolower($parameter->getName());
-			// check to see if we've set it
-			if(isset($parameters[$parameterName]))
+			$return = $parameterValues;
+		}
+		else
+		{
+			// emulate case-insenstivity (as method names and classs names are
+			// not case sensitive). Keep the case-insensitive consistancy.
+			$return = array();
+			$parameters = array_change_key_case($parameters, CASE_LOWER);
+
+			// finally, do the main loop.
+			foreach($method->getParameters() as $parameter)
 			{
-				$return[] = $parameters[$parameterName];
-			}
-			// if the parameter is not optional, thrown an error 
-			// because the user (developer) probably made a mistake
-			elseif(!$parameter->isOptional())
-			{
-				throw new Enject_Exception('Missing parameter ['
-					. $parameter->getName() . '] for method ['
-					. $method->getName() . ']');
+				// emulate case-insensitivity
+				$parameterName = strtolower($parameter->getName());
+				// check to see if we've set it
+				if(isset($parameters[$parameterName]))
+				{
+					$return[] = $parameters[$parameterName];
+				}
+				// if the parameter is not optional, thrown an error
+				// because the user (developer) probably made a mistake
+				elseif(!$parameter->isOptional())
+				{
+					require_once 'Enject/Exception.php';
+					throw new Enject_Exception('Missing parameter ['
+						. $parameter->getName() . '] for method ['
+						. $method->getName() . ']');
+				}
 			}
 		}
 		return $return;
@@ -52,33 +73,64 @@ class Enject_Tools
 	/**
 	 * Executes injections into an object
 	 * @param Mixed $object
-	 * @param Mixed[][] $injections
+	 * @param Enject_Injection[] $injections
 	 * @return $object
 	 */
-	static function inject($object, $injections)
+	static function inject($container, $object, $injections)
 	{
-		foreach($injections as $methodName => $calls)
+		foreach($injections as $injection)
 		{
-			$method = new ReflectionMethod($object, $methodName);
-			foreach($calls as $parameters)
-			{ 
-				if(count($parameters) > 1)
+			$methodName = $injection->getMethod();
+			$parameters = $injection->getParameters();
+
+			// go through each parameter resolving Enject_Value parameters
+			// as they happen
+			foreach($parameters as $k => $v)
+			{
+				if($v instanceOf Enject_Value)
 				{
-					$parameters = self::prepareArguments($method, $parameters);
+					$parameters[$k] = $v->resolve($container);
+				}
+			}
+			// figure out how to pass the arguments
+			try
+			{
+				$method = new ReflectionMethod($object, $methodName);
+				$parameters = self::prepareArguments($method, $parameters);
+				$method->invokeArgs($object, $parameters);
+			}
+			catch(ReflectionException $e)
+			{
+				// if there's a magic method, attempt to use that
+				if(method_exists($object, '__call'))
+				{
+					// they have one defined, however we can't do much
+					// smart things with the parameter by name :(
+					$parameters = array_values($parameters);
+					$callback = array($object, $methodName);
+					call_user_func_array($callback, $parameters);
 				}
 				else
 				{
-					$parameters = array_values($parameters);
+					// not much we can do :(
+					throw $e;
 				}
-				$method->invokeArgs($object, $parameters);
 			}
 		}
 		return $object;
 	}
 
+	/**
+	 * Returns an array of all the types that apply to an object (classes and
+	 * interfaces) in one list.
+	 * @param Mixed|String $object Object or classname to get the types of
+	 * @return String[]
+	 */
 	static function getTypes($object)
 	{
 		$return = array();
+		// if the object is a Enject_Value, use getTypes to get its type
+		// just ensure that the array returned is an associative array
 		if($object instanceOF Enject_Value)
 		{
 			foreach($object->getTypes() as $type)
@@ -88,27 +140,32 @@ class Enject_Tools
 		}
 		else
 		{
-			if(is_string($object))
+			$reflector = $object;
+			// if the object isn't already a reflector, make it one
+			if(!$reflector instanceOf ReflectionClass)
 			{
-				$class = new ReflectionClass($object);
+				if(is_string($reflector))
+				{
+					$reflector = new ReflectionClass($reflector);
+				}
+				else
+				{
+					$reflector = new ReflectionObject($object);
+				}
 			}
-			elseif($object instanceOf ReflectionClass)
-			{
-				$class = $object;
-			}
-			else
-			{
-				$class = new ReflectionObject($object);
-			}
-			foreach($class->getInterfaceNames() as $interface)
+
+			// get the list of interfaces and add it to the return
+			foreach($reflector->getInterfaceNames() as $interface)
 			{
 				$return[$interface] = $interface;
 			}
+
+			// finally, use the reflector to go up the list of parents
 			do
 			{
-				$className = $class->getName();
+				$className = $reflector->getName();
 				$return[$className] = $className;
-			} while($class = $class->getParentClass());
+			} while($reflector = $reflector->getParentClass());
 		}
 		return $return;
 	}

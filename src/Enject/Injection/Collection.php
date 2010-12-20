@@ -9,7 +9,16 @@
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
-class Enject_Exception
-	extends Exception
+
+/**
+ * Provide a consistant way to get a list of {@link Enject_Injection} from
+ * an object.
+ */
+interface Enject_Injection_Collection
 {
+	/**
+	 * Gets various other injections to make
+	 * @return Enject_Injection[]
+	 */
+	function getInjections();
 }

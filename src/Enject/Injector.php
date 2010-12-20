@@ -9,7 +9,17 @@
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
-class Enject_Exception
-	extends Exception
+
+/**
+ * A injector injects other objects (commonly using a blueprint)
+ */
+interface Enject_Injector
 {
+	/**
+	 * Requests the injector to inject the injector object
+	 * @param Enject_Container $container
+	 * @param Mixed $object
+	 * @return Mixed
+	 */
+	function inject($container, $object);
 }

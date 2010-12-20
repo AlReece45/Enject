@@ -1,21 +1,40 @@
 <?php
-
-require_once 'Enject/Blueprint/Proxy.php';
+/*
+ * Enject Library
+ * Copyright 2010 Alexander Reece
+ * Licensed under: GNU Lesser Public License 2.1 or later
+ *//**
+ * @author Alexander Reece <alreece45@gmail.com>
+ * @copyright 2010 (c) Alexander Reece
+ * @license http://www.opensource.org/licenses/lgpl-2.1.php
+ * @package Enject
+ */
+require_once 'Enject/Injection/Collection.php';
 require_once 'Enject/Value.php';
 
+/**
+ * This {@link Enject_Value} is responsible for creating AND injecting and
+ * object when it is resolved.
+ */
 class Enject_Value_Builder
-	implements Enject_Value, Enject_Blueprint_Proxy
+	implements Enject_Injection_Collection,
+		Enject_Value
 {
-	/**
-	 * @var Enject_Blueprint
-	 */
-	protected $_blueprint;
-
 	/**
 	 * @var String
 	 */
 	protected $_className;
-	
+
+	/**
+	 * @var Enject_Container
+	 */
+	protected $_container;
+
+	/**
+	 * @var Enject_Injection_Collection
+	 */
+	protected $_injectionCollection;
+
 	/**
 	 * If there is an instance of the object, and the object is shared. This
 	 * is set to the shared instance of the object.
@@ -30,30 +49,23 @@ class Enject_Value_Builder
 	protected $_shared = false;
 
 	/**
+	 * Parameters used for the constructor of the injector.
+	 * @see registerParameter()
+	 * @var Mixed[]
+	 */
+	protected $_parameters = array();
+
+	/**
 	 * Adds an injection (a method call with parameters)
-	 * @param String $method
+	 * @param String|Enject_Injection $method
 	 * @param Mixed $parameters
-	 * @return Enject_Target_Default
-	 * @uses getBlueprint()
-	 * @uses Enject_Blueprint::addInjection()
+	 * @see addProperty() properties override regular injections
+	 * @return Enject_Value_Builder
 	 */
 	function addInjection($method, $parameters = array())
 	{
-		$this->getBlueprint()->addInjection($method, $parameters);
+		$this->getInjectionCollection()->addInjection($method, $parameters);
 		return $this;
-	}
-
-	/**
-	 * @return Enject_Blueprint
-	 */
-	function getBlueprint()
-	{
-		if(!isset($this->_blueprint))
-		{
-			require_once 'Enject/Blueprint/Default.php';
-			$this->_blueprint = new Enject_Blueprint_Default();
-		}
-		return $this->_blueprint;
 	}
 
 	/**
@@ -65,33 +77,60 @@ class Enject_Value_Builder
 	}
 
 	/**
-	 * @return Mixed[]
-	 * @uses getBlueprint()
-	 * @uses Enject_Blueprint::getInjections()
+	 * @return String
 	 */
-	function getInjections(Enject_Container $container)
+	function getContainer()
 	{
-		return $this->getBlueprint()->getInjections($container);
+		return $this->_container;
 	}
 
 	/**
+	 * @return Enject_Injection_Collection
+	 */
+	function getInjectionCollection()
+	{
+		if(!$this->_injectionCollection
+			instanceOf Enject_Injection_Collection_Default)
+		{
+			require_once 'Enject/Injection/Collection/Default.php';
+			$collection = new Enject_Injection_Collection_Default();
+			$this->_injectionCollection = $collection;
+		}
+		return $this->_injectionCollection;
+	}
+
+	/**
+	 * Gets the methods to call after the object is created
+	 * @see addInjection()
+	 * @see setProperty()
+	 * @uses $_properties
+	 * @uses $_injections
+	 * @return Enject_Injection[]
+	 */
+	function getInjections()
+	{
+		return $this->getInjectionCollection()->getInjections();
+	}
+
+	/**
+	 * Gets the injector parameters
+	 * @see registerParameter()
+	 * @uses $_parameters
 	 * @return Mixed[]
-	 * @uses getBlueprint()
-	 * @uses Enject_Blueprint::getParameters()
 	 */
 	function getParameters()
 	{
-		return $this->getBlueprint()->getParameters();
+		return $this->_parameters;
 	}
 
 	/**
-	 * @return Mixed[]
-	 * @uses getBlueprint()
-	 * @uses Enject_Blueprint::getProperties()
+	 * Sets whether the instance will be shared or not
+	 * @see setShared()
+	 * @return Boolean
 	 */
-	function getProperties()
+	function getShared()
 	{
-		return $this->getBlueprint()->getProperties();
+		return $this->_shared;
 	}
 
 	/**
@@ -100,23 +139,32 @@ class Enject_Value_Builder
 	function getTypes()
 	{
 		require_once 'Enject/Tools.php';
-		return Enject_Tools::getTypes(new ReflectionClass($this->getClassname()));
+		$class = new ReflectionClass($this->getClassname());
+		if($class->implementsInterface('Enject_Value'))
+		{
+			// TODO: see if there is a better way to resolve this
+			$return = $this->resolve()->getTypes();
+		}
+		else
+		{
+			$return = Enject_Tools::getTypes($class);
+		}
+		return $return;
 	}
 
 	/**
-	 * Sets the blueprint used
-	 * @param Enject_Blueprint $blueprint
-	 * @return Enject_Target_Default
+	 * @param Enject_Container $className
+	 * @return Enject_Value_Builder
 	 */
-	function setBlueprint(Enject_Blueprint $blueprint)
+	function setContainer($container)
 	{
-		$this->_blueprint = $blueprint;
+		$this->_container = $container;
 		return $this;
 	}
 
 	/**
 	 * @param String $className
-	 * @return Enject_Builder_Default
+	 * @return Enject_Value_Builder
 	 */
 	function setClassname($className)
 	{
@@ -125,20 +173,7 @@ class Enject_Value_Builder
 	}
 
 	/**
-	 * @param String $property
-	 * @param Mixed $value
-	 * @return Enject_Target_Default
-	 * @uses getBlueprint()
-	 * @uses Enject_Blueprint::getProperties()
-	 */
-	function setProperty($property, $value)
-	{
-		$this->getBlueprint()->setProperty($property, $value);
-		return $this;
-	}
-
-	/**
-	 * @param <type> $shared
+	 * @param Boolean $shared
 	 * @return Enject_Value_Builder
 	 */
 	function setShared($shared = true)
@@ -148,11 +183,46 @@ class Enject_Value_Builder
 	}
 
 	/**
+	 * Sets the parameter to use in a constructor
+	 * @param Mixed[] $parameters
+	 * @return Enject_Value_Builder
+	 */
+	function setParameters($parameters)
+	{
+		$this->_parameters = $parameters;
+		return $this;
+	}
+
+	/**
+	 * Sets a property (a value set through setter methods)
+	 * @param String $property
+	 * @param Mixed $value
+	 * @return Enject_Value_Builder
+	 */
+	function registerParameter($name, $value)
+	{
+		$this->_parameters[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Sets a property (a value set through setter methods)
+	 * @param String $property
+	 * @param Mixed $value
+	 * @return Enject_Value_Builder
+	 */
+	function registerProperty($property, $value)
+	{
+		$this->getInjectionCollection()->registerProperty($property, $value);
+		return $this;
+	}
+
+	/**
 	 * @return Mixed
 	 * @uses getInjections()
 	 * @uses Enject_Tools::inject()
 	 */
-	function resolve(Enject_Container $container)
+	function resolve()
 	{
 		if($this->_shared && $this->_instance)
 		{
@@ -161,13 +231,17 @@ class Enject_Value_Builder
 		else
 		{
 			require_once 'Enject/Tools.php';
-			$return = $container->getInstance($this->getClassname());
-			$return = Enject_Tools::inject($return, $this->getInjections($container));
+			$container = $this->getContainer();
+			$className = $this->getClassname();
+			$return = new $className;
+			$injections = $this->getInjections($container);
+			$return = Enject_Tools::inject($container, $return, $injections);
+			$container->inject($return);
 			if($this->_shared)
 			{
 				$this->_instance = $return;
 			}
 		}
-		return $object;
+		return $return;
 	}
 }

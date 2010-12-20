@@ -1,5 +1,26 @@
 <?php
+/*
+ * Enject Library
+ * Copyright 2010 Alexander Reece
+ * Licensed under: GNU Lesser Public License 2.1 or later
+ *//**
+ * @author Alexander Reece <alreece45@gmail.com>
+ * @copyright 2010 (c) Alexander Reece
+ * @license http://www.opensource.org/licenses/lgpl-2.1.php
+ * @package Enject
+ */
 
+/**
+ * Creates and manages objects.
+ *
+ * <p>First, the container manages objects. You can create an object any way you
+ * want and register it with the container. A more robust way is getting an
+ * object builder and telling it out to create the object.</p>
+ *
+ * <p>Second, the container manages injectors, injectors apply to classes or
+ * interfaces they are useful for defining injections that aren't a part of
+ * an specific injection.</p>
+ */
 class Enject_Container
 {
 	/**
@@ -11,37 +32,20 @@ class Enject_Container
 	protected $_components = array();
 
 	/**
-	 * Available (registered) components
-	 * @var Enject_Target[]
-	 * @see getTarget()
-	 * @see registerTarget()
+	 * Available (registered) injectors
+	 * @var Enject_Injector[]
+	 * @see getInjector()
+	 * @see registerInjector()
 	 */
-	protected $_targets = array();
+	protected $_injectors = array();
 
 	/**
-	 * Available (registered) components
+	 * Available (registered) types
 	 * @var Mixed[]
 	 * @see getComponent()
 	 * @see registerComponent()
 	 */
 	protected $_types = array();
-
-	/**
-	 * Resolves the types that a component uses
-	 * @param String $component
-	 * @uses $_types
-	 */
-	protected function _registerComponent($component)
-	{
-		require_once 'Enject/Tools.php';
-		foreach(Enject_Tools::getTypes($component) as $type)
-		{
-			if(!isset($this->_types[$type]))
-			{
-				$this->_types[$type] = $component;
-			}
-		}
-	}
 
 	/**
 	 * Returns an object builder.
@@ -55,6 +59,7 @@ class Enject_Container
 	{
 		require_once 'Enject/Value/Builder.php';
 		$return = new Enject_Value_Builder();
+		$return->setContainer($this);
 		$return->setClassname($className);
 		return $return;
 	}
@@ -64,95 +69,20 @@ class Enject_Container
 	 * @param String $className
 	 * @return $class
 	 * @throws Enject_Exception
-	 * @uses $_targets
+	 * @uses $_injectors
 	 */
-	function getInstance($className)
+	function inject($target)
 	{
-		$class = $instanceClass = new ReflectionClass($className);
-		$interfaces = $parameters = array();
-		$classTargets = $interfaceTargets = array();
-
-		// loop through the class heirarchy to gather all the targets
-		do
+		$class = new ReflectionClass($target);
+		foreach($this->_getTypeList($class) as $type)
 		{
-			$currentClassName = strtolower($class->getName());
-			// check to see if there's a target for this class name
-			if(isset($this->_targets[$currentClassName]))
+			$type = strtolower($type);
+			if(isset($this->_injectors[$type]))
 			{
-				$target = $this->_targets[$currentClassName];
-				$classTargets[] = array($currentClassName, $target);
-				$classParameters = array();
-				// parameters in PHP are usually case sensitive, everywhere
-				// else in our framework, because of the way methods work for
-				// method based-injection, they are not case-sensitive
-				// here: we emulate the case-insensitivity
-				foreach($target->getParameters() as $name => $parameter)
-				{
-					$classParameters[strtolower($name)] = $parameter;
-				}
-				$parameters = array_merge($classParameters, $parameters);
-			}
-			// get any targets targeting interfaces
-			// we want to make sure to only apply interfaces in the correct
-			// order. (they shouldn't all be applied last)
-			$interfaceTargets[$currentClassName] = array();
-			foreach($class->getInterfaceNames() as $interfaceName)
-			{
-				$interfaceName = strtolower($interfaceName);
-				if(isset($this->_targets[$interfaceName]))
-				{
-					$interfaceTargets[$currentClassName][] = array(
-						$interfaceName,
-						$this->_targets[$interfaceName],
-					);
-				}
-			}
-		} while($class = $class->getParentClass());
-
-		//  finally, create the object
-		if($parameters)
-		{
-			$constructor = $instanceClass->getConstructor();
-			if($constructor)
-			{
-				require_once 'Enject/Tools.php';
-				$args = Enject_Tools::prepareArguments($constructor, $parameters);
-				$instance = $class->newInstanceArgs($className, $args);
-			}
-			else
-			{
-				$instance = new $className;
+				$this->_injectors[$type]->inject($this, $target);
 			}
 		}
-		else
-		{
-			$instance = new $className;
-		}
-
-		// go through all the targets (in order of the class heirarchy) and
-		// instruct them to inject the newly created object
-		foreach(array_reverse($classTargets) as $classTargetPart)
-		{
-			list($className, $classTarget) = $classTargetPart;
-			// get the interfaces first, we want to apply interfaces before
-			// they're used in the highest-level class.
-			if(isset($interfaceTargets[$className]))
-			{
-				foreach($interfaceTargets[$className] as $interfacePart)
-				{
-					list($interfaceName, $interfaceTarget) = $interfacePart;
-					// don't inject the interface if a parent has already done so
-					if(!isset($interfaces[$interfaceName]))
-					{
-						$interfaceTarget->inject($instance);
-					}
-				}
-			}
-			// the class is more specific than the interfaces
-			// so we inject it after the interfaces
-			$classTarget->inject($instance);
-		}
-		return $instance;
+		return $this;
 	}
 
 	/**
@@ -163,25 +93,28 @@ class Enject_Container
 	 */
 	function getComponent($name)
 	{
-		return $this->getInstance('Enject_Value_Component')->setComponent($name);
+		require_once 'Enject/Value/Component.php';
+		$return = new Enject_Value_Component();
+		$return->setContainer($this);
+		$return->setName($name);
+		return $return;
 	}
 
 	/**
 	 * @param String $name
-	 * @return Enject_Target
-	 * @uses $_targets
-	 * @uses Enject_Target_Default
+	 * @return Enject_Injector
+	 * @uses $_injectors
+	 * @uses Enject_Injector_Default
 	 */
-	function getTarget($name)
+	function getInjector($name)
 	{
 		$name = strtolower($name);
-		if(!isset($this->_targets[$name]))
+		if(!isset($this->_injectors[$name]))
 		{
-			require_once 'Enject/Target/Default.php';
-			$this->_targets[$name] = new Enject_Target_Default();
-			$this->_targets[$name]->setContainer($this);
+			require_once 'Enject/Injector/Default.php';
+			$this->_injectors[$name] = new Enject_Injector_Default();
 		}
-		return $this->_targets[$name];
+		return $this->_injectors[$name];
 	}
 
 	/**
@@ -190,9 +123,13 @@ class Enject_Container
 	 * @throws Enject_Exception
 	 * @uses $_components
 	 */
-	function getType($name)
+	function getType($type)
 	{
-		return $this->getInstance('Enject_Value_Type')->setType($name);
+		require_once 'Enject/Value/Type.php';
+		$return = new Enject_Value_Type();
+		$return->setContainer($this);
+		$return->setType($type);
+		return $return;
 	}
 
 	/**
@@ -213,14 +150,14 @@ class Enject_Container
 
 	/**
 	 * @param $className
-	 * @param Enject_Target $target
-	 * @see getTarget()
-	 * @uses $_targets
+	 * @param Enject_Injector $injector
+	 * @see getInjector()
+	 * @uses $_injectors
 	 * @return Enject_Factory
 	 */
-	function registerTarget($typeName, Enject_Target $target)
+	function registerInjector($typeName, $injector)
 	{
-		$this->_targets[$typeName] = $target;
+		$this->_injectors[strtolower($typeName)] = $injector;
 		return $this;
 	}
 
@@ -276,14 +213,69 @@ class Enject_Container
 		}
 		elseif(class_exists($typeName))
 		{
-			$return = $this->getInstance($typeName);
+			$return = new $typeName();
+			$this->inject($return);
 		}
 		else
 		{
+			require_once 'Enject/Exception.php';
 			throw new Enject_Exception('Unable to initialize an non-class'
 				. '[' . $typeName . ']');
 		}
 		// return the expected value
+		return $return;
+	}
+
+	/**
+	 * Resolves the types that a component uses
+	 * @param String $component
+	 * @uses $_types
+	 */
+	protected function _registerComponent($component)
+	{
+		require_once 'Enject/Tools.php';
+		foreach(Enject_Tools::getTypes($component) as $type)
+		{
+			if(!isset($this->_types[$type]))
+			{
+				$this->_types[$type] = $component;
+			}
+		}
+	}
+
+	/**
+	 * Returns a type hierarchy in reverse order
+	 * @param ReflectionClass $class
+	 * @return String[]
+	 */
+	protected static function _getTypeList(ReflectionClass $class)
+	{
+		$return = $classes = $registeredTypes = array();
+		// loop through the class heirarchy to gather all the injectors
+		do
+		{
+			$className = $class->getName();
+			if(!isset($registeredTypes[$className]))
+			{
+				$classes[] = $className;
+				$registeredTypes[$className] = $class;
+			}
+		} while($class = $class->getParentClass());
+		// loop through the classes in reverse order
+		// to place the interfaces in the correct places
+		foreach(array_reverse($classes) as $className)
+		{
+			$class = $registeredTypes[$className];
+			foreach($class->getInterfaceNames() as $interfaceName)
+			{
+				if(!isset($registeredTypes[$interfaceName]))
+				{
+					$return[] = $interfaceName;
+					$registeredTypes[$interfaceName] = true;
+				}
+			}
+			$return[] = $className;
+		}
 		return $return;
 	}
 }
