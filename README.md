@@ -2,7 +2,7 @@ Enject
 ======
 
 Enject is a PHP Injection Library. To use it, make sure that the Enject 
-directory appears in your include_path. I've licenses it under the LGPL
+directory appears in your include_path. I've licensed it under the LGPL
 2.1+ so you should be able to use it anywhere. If there's any licensing 
 concerns or problems, feel free to contact me about them. 
 
