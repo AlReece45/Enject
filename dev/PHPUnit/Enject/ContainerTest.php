@@ -206,19 +206,6 @@ class Test_Enject_ContainerTest
 	}
 
 	/**
-	 * @depends testInjectorInstance
-	 * @depends testRegisterInjector
-	 */
-	function testGetRegisteredInjector()
-	{
-		$expected = new Enject_Injector_Default();
-		$container = $this->_getInstance();
-		$container->registerInjector('Enject_Injector_Default', $expected);
-		$injector = $container->getInjector('Enject_Injector_Default');
-		$this->assertSame($expected, $injector);
-	}
-
-	/**
 	 * @depends testTargetInstance
 	 * @depends testRegisterType
 	 */
@@ -356,6 +343,34 @@ class Test_Enject_ContainerTest
 		$this->assertEquals(1, count($properties));
 		$this->assertEquals(4, $target->countSetProperties());
 		$this->assertEquals('testValueABCDEFG', $properties['test']);
+	}
+
+	/**
+	 * Classes should always apply after interfaces
+	 * @depends testInjectInjection
+	 */
+	function testInjectMultipleInjections()
+	{
+		$this->assertClassExists('Test_Enject_Injector_Mock');
+		$injector1 = new Test_Enject_Injector_Mock();
+		$injector2 = new Test_Enject_Injector_Mock();
+
+		// register the injectors on the container
+		$container = $this->_getInstance();
+		$container->registerInjector('Test_Enject_Target_Mock', $injector1);
+		$container->registerInjector('Test_Enject_Target_Mock', $injector2);
+
+		$target = new Test_Enject_Target_Mock();
+		// make sure that the newly created object is marked as "not injected"
+		$this->assertFalse($injector1->isObjectInjected($target));
+		$this->assertFalse($injector2->isObjectInjected($target));
+
+		// innject the object
+		$container->inject($target);
+
+		// make sure that the objects are now marked as injected
+		$this->assertTrue($injector1->isObjectInjected($target));
+		$this->assertTrue($injector2->isObjectInjected($target));
 	}
 }
 
