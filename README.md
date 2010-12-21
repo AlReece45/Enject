@@ -86,13 +86,10 @@ instance of Enject_Value_Builder. It allows you to specify constructors
 as well as Injections (methods and properties). When you want the constructed
 object to be
 
-You may also define your own Injector and register it with the 
-registerInjector() method. Note, when not using the Default Injector, it
-may cause some havock with other scripts using the framework. This is
-planned to be resolved by making getInjector() only return Injector_Defaults.
-This will likely involve a redesign in the internal storage of the Container,
-so keep this in mind if you extend the container, or use getInjector to get
-your own injectors (the latter being not recommended for the reasons described).
+You may also define your own Injector and register it with the
+registerInjector() method. Note that you're expected to manage your own
+injectors so there is no public functionality to get all of the injectors for
+a target.
 
 Objects are reused via Components and Via types. When you register a component
 it registers all of its types as well. Its a first-come first-serve system
