@@ -264,6 +264,7 @@ class Enject_Value_Builder
 		}
 		else
 		{
+			require_once 'Enject/Tools.php';
 			$container = $this->getContainer();
 			$className = $this->getClassname();
 			$return = new $className;
