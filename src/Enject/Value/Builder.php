@@ -37,7 +37,8 @@ class Enject_Value_Builder
 
 	/**
 	 * If there is an instance of the object, and the object is shared. This
-	 * is set to the shared instance of the object.
+	 * is set to the resolved value of the builder (if it is not a
+	 * {@link Enject_Value}, then this match the value of {@link $_result}
 	 * @var Mixed
 	 */
 	protected $_instance;
@@ -54,6 +55,13 @@ class Enject_Value_Builder
 	 * @var Mixed[]
 	 */
 	protected $_parameters = array();
+
+	/**
+	 * If there is an instance of the object, and the object is shared. This
+	 * is set to the shared instance of the object.
+	 * @var Mixed
+	 */
+	protected $_unresolvedInstance;
 
 	/**
 	 * Adds an injection (a method call with parameters)
@@ -143,7 +151,7 @@ class Enject_Value_Builder
 		if($class->implementsInterface('Enject_Value'))
 		{
 			// TODO: see if there is a better way to resolve this
-			$return = $this->resolve()->getTypes();
+			$return = $this->_getUnresolvedInstance()->getTypes();
 		}
 		else
 		{
@@ -230,7 +238,32 @@ class Enject_Value_Builder
 		}
 		else
 		{
-			require_once 'Enject/Tools.php';
+			$return = $this->_getUnresolvedInstance();
+			if($return instanceOf Enject_Value)
+			{
+				$return = $return->resolve();
+			}
+			if($this->_shared)
+			{
+				$this->_instance = $return;
+			}
+		}
+		return $return;
+	}
+
+	/**
+	 * Creates an object instance and does not resolve it. If the object is
+	 * shared, it reuses the first one.
+	 * @return Mixed
+	 */
+	protected function _getUnresolvedInstance()
+	{
+		if($this->_shared && $this->_unresolvedInstance)
+		{
+			$return = $this->_unresolvedInstance;
+		}
+		else
+		{
 			$container = $this->getContainer();
 			$className = $this->getClassname();
 			$return = new $className;
@@ -239,7 +272,7 @@ class Enject_Value_Builder
 			$container->inject($return);
 			if($this->_shared)
 			{
-				$this->_instance = $return;
+				$this->_unresolvedInstance = $return;
 			}
 		}
 		return $return;

@@ -53,6 +53,15 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
+	 * Ensures that the mock value builder class exists and can be created
+	 */
+	function testValueInstance()
+	{
+		$this->assertClassExists('Test_Enject_Value_Mock');
+		$target = new Test_Enject_Value_Mock();
+	}
+
+	/**
 	 * @depends testInstance
 	 */
 	function testAddInjection()
@@ -278,13 +287,30 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testSetClassname
 	 * @depends testContainerInstance
+	 * @depends testTargetInstance
 	 */
 	function testResolve()
 	{
 		$builder = $this->_getInstance();
 		$builder->setContainer(new Enject_Container());
+		$builder->setClassname('Test_Enject_Target_Mock');
+		$this->assertType('Test_Enject_Target', $builder->resolve());
+	}
+
+	/**
+	 * @depends testSetClassname
+	 * @depends testContainerInstance
+	 * @depends testTargetInstance
+	 * @depends testValueInstance
+	 */
+	function testResolveValue()
+	{
+		$builder = $this->_getInstance();
+		$target = new Test_Enject_Target_Mock();
+		$builder->setContainer(new Enject_Container());
 		$builder->setClassname('Test_Enject_Value_Mock');
-		$this->assertType('Test_Enject_Value_Mock', $builder->resolve());
+		$builder->registerProperty('value', $target);
+		$this->assertSame($target, $builder->resolve());
 	}
 
 	/**
@@ -294,7 +320,7 @@ class Test_Enject_Value_Builder_Test
 	{
 		$builder = $this->_getInstance();
 		$builder->setContainer(new Enject_Container());
-		$builder->setClassname('Test_Enject_Value_Mock');
+		$builder->setClassname('Test_Enject_Target_Mock');
 		$builder->setShared();
 		$instance = $builder->resolve();
 		$this->assertSame($instance, $builder->resolve());
@@ -307,7 +333,7 @@ class Test_Enject_Value_Builder_Test
 	{
 		$builder = $this->_getInstance();
 		$builder->setContainer(new Enject_Container());
-		$builder->setClassname('Test_Enject_Value_Mock');
+		$builder->setClassname('Test_Enject_Target_Mock');
 		$instance = $builder->resolve();
 		$this->assertNotSame($instance, $builder->resolve());
 	}
@@ -315,10 +341,10 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testGetTypes
 	 * @depends testResolve
+	 * @depends testValueInstance
 	 */
 	function testGetTypesValue()
 	{
-		$this->assertClassExists('Test_Enject_Value_Mock');
 		$target = new Test_Enject_Target_Mock();
 		$builder = $this->_getInstance();
 		$builder->setClassname('Test_Enject_Value_Mock');
