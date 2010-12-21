@@ -359,4 +359,27 @@ class Test_Enject_Value_Builder_Test
 		);
 		$this->assertEquals($expected, $return);
 	}
+
+	/**
+	 * @depends testGetTypesValue
+	 * @depends testSetShared
+	 */
+	function testGetTypesSharedValue()
+	{
+		$target = new Test_Enject_Target_Mock();
+		$builder = $this->_getInstance();
+		$builder->setClassname('Test_Enject_Value_Mock');
+		$builder->setContainer(new Enject_Container());
+		$builder->registerProperty('value', $target);
+		$builder->setShared();
+		$builder->resolve();
+		$return = $builder->getTypes();
+		$expected = array(
+			'Test_Enject_Target' => 'Test_Enject_Target',
+			'Test_Enject_Target_Mock' => 'Test_Enject_Target_Mock',
+			'Test_Enject_Target_Mock_Parent' => 'Test_Enject_Target_Mock_Parent',
+			'Test_Enject_Target_Parent' => 'Test_Enject_Target_Parent',
+		);
+		$this->assertEquals($expected, $return);
+	}
 }
