@@ -21,6 +21,20 @@ class Enject_Value_Builder
 		Enject_Value
 {
 	/**
+	 * Default mode to use when building objects. Currently only affects one 
+	 * thing: objects that implement Enject_Value. In the default mode, it
+	 * resolves them. To return a Builder (without resolving it), use the
+	 * "builder" mode
+	 */
+	const MODE_DEFAULT = 'default';
+
+	/**
+	 * Use this mode when you want to consturct a {@link Enject_Value} without
+	 * having it resolved.
+	 */
+	const MODE_VALUE = 'value';
+	
+	/**
 	 * @var String
 	 */
 	protected $_className;
@@ -42,6 +56,12 @@ class Enject_Value_Builder
 	 * @var Mixed
 	 */
 	protected $_instance;
+
+	/**
+	 * Mode to use for resolving objects
+	 * @var String
+	 */
+	protected $_mode = self::MODE_DEFAULT;
 
 	/**
 	 * Whether or not the object is shared (an instance will be reused)
@@ -121,6 +141,15 @@ class Enject_Value_Builder
 	}
 
 	/**
+	 * Gets the currently set build mode
+	 * @see setMode()
+	 */
+	function getMode()
+	{
+		return $this->_mode;
+	}
+
+	/**
 	 * Gets the injector parameters
 	 * @see registerParameter()
 	 * @uses $_parameters
@@ -148,7 +177,8 @@ class Enject_Value_Builder
 	{
 		require_once 'Enject/Tools.php';
 		$class = new ReflectionClass($this->getClassname());
-		if($class->implementsInterface('Enject_Value'))
+		if($class->implementsInterface('Enject_Value')
+				 && $this->getMode() != self::MODE_VALUE)
 		{
 			// TODO: see if there is a better way to resolve this
 			$return = $this->_getUnresolvedInstance()->getTypes();
@@ -177,6 +207,18 @@ class Enject_Value_Builder
 	function setClassname($className)
 	{
 		$this->_className = $className;
+		return $this;
+	}
+
+	/**
+	 * Sets the resolving mode:
+	 * @see MODE_DEFAULT
+	 * @see MODE_VALUE
+	 * @return Enject_Value_Builder
+	 */
+	function setMode($mode)
+	{
+		$this->_mode = $mode;
 		return $this;
 	}
 
@@ -239,7 +281,8 @@ class Enject_Value_Builder
 		else
 		{
 			$return = $this->_getUnresolvedInstance();
-			if($return instanceOf Enject_Value)
+			if($return instanceOf Enject_Value
+				 && $this->getMode() != self::MODE_VALUE)
 			{
 				$return = $return->resolve();
 			}

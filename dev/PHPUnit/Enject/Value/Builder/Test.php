@@ -64,6 +64,15 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testGetModeDefault()
+	{
+		$builder = $this->_getInstance();
+		$this->assertEquals('default', $builder->getMode());
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testGetInjectionCollection()
 	{
 		$builder = $this->_getInstance();
@@ -101,6 +110,15 @@ class Test_Enject_Value_Builder_Test
 		$builder = $this->_getInstance();
 		$return = $builder->registerParameter('test', 'value');
 		$this->assertSame($builder, $return);
+	}
+
+	/**
+	 * @depends testInstance
+	 */
+	function testSetMode()
+	{
+		$builder = $this->_getInstance();
+		$this->assertSame($builder, $builder->setMode('value'));
 	}
 
 	/**
@@ -199,7 +217,17 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
-	 * @depends testSetContainer
+	 * @depends testSetMode
+	 */
+	function testGetSetMode()
+	{
+		$builder = $this->_getInstance();
+		$builder->setMode('builder');
+		$this->assertEquals('builder', $builder->getMode());
+	}
+
+	/**
+	 * @depends testInstance
 	 */
 	function testGetContainer()
 	{
@@ -300,6 +328,35 @@ class Test_Enject_Value_Builder_Test
 		$builder->setClassname('Test_Enject_Value_Mock');
 		$builder->registerProperty('value', $target);
 		$this->assertSame($target, $builder->resolve());
+	}
+
+	/**
+	 * @depends testResolve
+	 * @depends testValueInstance
+	 * @depends testSetMode
+	 */
+	function testResolveDefaultMode()
+	{
+		$value = new Test_Enject_Target_Mock();
+		$builder = $this->_getInstance();
+		$builder->setContainer(new Enject_Container());
+		$builder->setClassname('Test_Enject_Value_Mock');
+		$builder->registerProperty('value', $value);
+		$this->assertSame($value, $builder->resolve());
+	}
+
+	/**
+	 * @depends testResolve
+	 * @depends testValueInstance
+	 * @depends testSetMode
+	 */
+	function testResolveValueMode()
+	{
+		$builder = $this->_getInstance();
+		$builder->setContainer(new Enject_Container());
+		$builder->setClassname('Test_Enject_Value_Mock');
+		$builder->setMode('value');
+		$this->assertType('Test_Enject_Value_Mock', $builder->resolve());
 	}
 
 	/**
