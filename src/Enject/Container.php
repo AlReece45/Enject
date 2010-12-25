@@ -32,6 +32,13 @@ class Enject_Container
 	protected $_components = array();
 
 	/**
+	 * Default injectors to use
+	 * @see getInjector()
+	 */
+	protected $_defaultInjectors = array();
+
+	/**
+	 * Whether or not the default scopes have been registered yet
 	 * @var Boolean
 	 */
 	protected $_defaultScopesRegistered = false;
@@ -51,12 +58,6 @@ class Enject_Container
 	protected $_injectors = array();
 
 	/**
-	 * Default injectors to use
-	 * @see getInjector()
-	 */
-	protected $_defaultInjectors = array();
-
-	/**
 	 * All of the registered scopes
 	 * @var stdClass[]
 	 */
@@ -71,6 +72,8 @@ class Enject_Container
 	protected $_types = array();
 
 	/**
+	 * Disables the creation of the default scopes.
+	 * @see getScope()
 	 * @return Enject_Container
 	 */
 	function disableDefaultScopes()
@@ -80,6 +83,8 @@ class Enject_Container
 	}
 
 	/**
+	 * Enables the creation of the default scopes (default).
+	 * @see getScope()
 	 * @return Enject_Container
 	 */
 	function enableDefaultScopes()
@@ -106,34 +111,13 @@ class Enject_Container
 	}
 
 	/**
-	 * Gets an instance
-	 * @param String $className
-	 * @return $class
-	 * @throws Enject_Exception
-	 * @uses $_injectors
-	 */
-	function inject($target)
-	{
-		$class = new ReflectionClass($target);
-		foreach($this->_getTypeList($class) as $type)
-		{
-			$type = strtolower($type);
-			if(isset($this->_injectors[$type]))
-			{
-				foreach($this->_injectors[$type] as $injector)
-				{
-					$injector->inject($this, $target);
-				}
-			}
-		}
-		return $this;
-	}
-
-	/**
+	 * Gets a reference to a component (useful for injectors).
+	 *
+	 * The component does not need to exist when creating the reference, only
+	 * when resolving the reference (often when injecting an object).
+	 * @see resolveComponent() for the actual component
 	 * @param String $name
 	 * @return Mixed
-	 * @throws Enject_Exception
-	 * @uses $_components
 	 */
 	function getComponent($name)
 	{
@@ -145,9 +129,11 @@ class Enject_Container
 	}
 
 	/**
+	 * Gets a injectior for a target type.
+	 *
+	 * The injector is already registered using {@link registerInjector()}
 	 * @param String $name
 	 * @return Enject_Injector
-	 * @uses $_injectors
 	 * @uses Enject_Injector_Default
 	 */
 	function getInjector($name)
@@ -206,13 +192,38 @@ class Enject_Container
 	}
 
 	/**
+	 * Injects an object with all of the injectors that matches its types
+	 *
+	 * Injectors are applied in order from most-generic to most-specific.
+	 * Interfaces are applied before classes. Parent classes are applied before
+	 * Child Classes.
+	 * @param Mixed $target
+	 * @return Mixed
+	 */
+	function inject($target)
+	{
+		$class = new ReflectionClass($target);
+		foreach($this->_getTypeList($class) as $type)
+		{
+			$type = strtolower($type);
+			if(isset($this->_injectors[$type]))
+			{
+				foreach($this->_injectors[$type] as $injector)
+				{
+					$injector->inject($this, $target);
+				}
+			}
+		}
+		return $this;
+	}
+
+	/**
 	 * Registers a component (an easily reusable injection object)
 	 * @param String $name
 	 * @param Mixed $component
-	 * @return Enject_Factory
+	 * @return Enject_Container
 	 * @see getComponent()
-	 * @uses _registerComponent()
-	 * @uses $_components
+	 * @see resolveComponent()
 	 */
 	function registerComponent($name, $component)
 	{
@@ -222,11 +233,12 @@ class Enject_Container
 	}
 
 	/**
+	 * Registers an injector for a target type
 	 * @param $className
 	 * @param Enject_Injector $injector
+	 * @return Enject_Container
 	 * @see getInjector()
-	 * @uses $_injectors
-	 * @return Enject_Factory
+	 * @see resolveInjector()x
 	 */
 	function registerInjector($typeName, $injector)
 	{
@@ -265,7 +277,7 @@ class Enject_Container
 	 * @param Mixed $component
 	 * @see getComponentByType()
 	 * @uses $_types
-	 * @return Enject_Factory
+	 * @return Enject_Container
 	 */
 	function registerType($type, $value)
 	{
