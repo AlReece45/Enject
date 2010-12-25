@@ -63,6 +63,16 @@ class Test_Enject_Value_Builder_Test
 
 	/**
 	 * @depends testInstance
+	 * @expectedException Enject_Exception
+	 */
+	function testGetContainerException()
+	{
+		$builder = $this->_getInstance();
+		$builder->getContainer();
+	}
+
+	/**
+	 * @depends testInstance
 	 */
 	function testGetModeDefault()
 	{

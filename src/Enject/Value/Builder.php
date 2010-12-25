@@ -126,6 +126,11 @@ class Enject_Value_Builder
 	 */
 	function getContainer()
 	{
+		if(!$this->_container instanceOf Enject_Container)
+		{
+			require_once 'Enject/Exception.php';
+			throw new Enject_Exception('Container not set in builder');
+		}
 		return $this->_container;
 	}
 
