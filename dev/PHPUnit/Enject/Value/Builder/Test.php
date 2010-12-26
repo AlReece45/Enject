@@ -73,6 +73,16 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testGetInjectionCollection()
+	{
+		$builder = $this->_getInstance();
+		$return = $builder->getInjectionCollection();
+		$this->assertType('Enject_Injection_Collection_Default', $return);
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testSetClassname()
 	{
 		$builder = $this->_getInstance();
@@ -110,16 +120,6 @@ class Test_Enject_Value_Builder_Test
 		$container = new Enject_Container();
 		$builder->setContainer($container);
 		$this->assertSame($container, $builder->getContainer());
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testGetInjectionCollection()
-	{
-		$builder = $this->_getInstance();
-		$return = $builder->getInjectionCollection();
-		$this->assertType('Enject_Injection_Collection_Default', $return);
 	}
 
 	/**
