@@ -206,6 +206,20 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
+	 * @depends testRegisterProperty
+	 */
+	function testGetPropertyInjections()
+	{
+		$builder = $this->_getInstance();
+		$builder->registerProperty('name', 'value');
+		$injections = $builder->getInjections();
+		$this->assertTraversable($injections);
+		$injection = reset($injections);
+		$this->assertEquals('setname', strtolower($injection->getMethod()));
+		$this->assertEquals(array('value'), $injection->getParameters());
+	}
+
+	/**
 	 * @depends testSetClassname
 	 * @depends testContainerInstance
 	 * @depends testTargetInstance
@@ -267,21 +281,6 @@ class Test_Enject_Value_Builder_Test
 		$this->assertFalse($builder->getShared());
 		$builder->setShared(true);
 		$this->assertTrue($builder->getShared());;
-	}
-
-	/**
-	 * @depends testRegisterProperty
-	 * @dpeends testGetInjections
-	 */
-	function testGetPropertyInjections()
-	{
-		$builder = $this->_getInstance();
-		$builder->registerProperty('name', 'value');
-		$injections = $builder->getInjections();
-		$this->assertTraversable($injections);
-		$injection = reset($injections);
-		$this->assertEquals('setname', strtolower($injection->getMethod()));
-		$this->assertEquals(array('value'), $injection->getParameters());
 	}
 
 	/**
