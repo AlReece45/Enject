@@ -83,6 +83,17 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testGetInjectionsEmpty()
+	{
+		$builder = $this->_getInstance();
+		$return = $builder->getInjections();
+		$this->assertTraversable($return);
+		$this->assertEquals(0, count($return));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testSetClassname()
 	{
 		$builder = $this->_getInstance();
@@ -120,17 +131,6 @@ class Test_Enject_Value_Builder_Test
 		$container = new Enject_Container();
 		$builder->setContainer($container);
 		$this->assertSame($container, $builder->getContainer());
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testGetInjectionsEmpty()
-	{
-		$builder = $this->_getInstance();
-		$return = $builder->getInjections();
-		$this->assertTraversable($return);
-		$this->assertEquals(0, count($return));
 	}
 
 	/**
