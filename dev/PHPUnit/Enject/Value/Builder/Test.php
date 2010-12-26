@@ -216,6 +216,17 @@ class Test_Enject_Value_Builder_Test
 		$builder->setContainer($container);
 		$this->assertSame($container, $builder->getContainer());
 	}
+
+	/**
+	 * @depends testSetParameters
+	 */
+	function testGetSetParameters()
+	{
+		$builder = $this->_getInstance();
+		$parameters = array('test' => 'value');
+		$builder->setParameters($parameters);
+		$this->assertEquals($parameters, $builder->getParameters());
+	}
 	
 	/**
 	 * @depends testSetClassname
@@ -235,17 +246,6 @@ class Test_Enject_Value_Builder_Test
 			'Test_Enject_Target_Parent' => 'Test_Enject_Target_Parent',
 		);
 		$this->assertEquals($expected, $return);
-	}
-
-	/**
-	 * @depends testSetParameters
-	 */
-	function testGetSetParameters()
-	{
-		$builder = $this->_getInstance();
-		$parameters = array('test' => 'value');
-		$builder->setParameters($parameters);
-		$this->assertEquals($parameters, $builder->getParameters());
 	}
 
 	/**
