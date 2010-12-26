@@ -238,6 +238,38 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
+	 * @depends testInstance
+	 */
+	function testSetScope()
+	{
+		$this->assertClassExists('Enject_Scope_Default');
+		$builder = $this->_getInstance();
+		$scope = new Enject_Scope_Default();
+		$this->assertSame($builder, $builder->setScope($scope));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
+	function testSetScopeString()
+	{
+		$builder = $this->_getInstance();
+		$this->assertSame($builder, $builder->setScope('default'));
+	}
+
+	/**
+	 * @depends testSetContainer
+	 */
+	function testGetScopeDefault()
+	{
+		$container = new Enject_Container();
+		$expected = $container->getScope('default');
+		$builder = $this->_getInstance();
+		$builder->setContainer($container);
+		$this->assertSame($expected, $builder->getScope());
+	}
+
+	/**
 	 * @depends testSetParameters
 	 */
 	function testGetSetParameters()
@@ -246,6 +278,22 @@ class Test_Enject_Value_Builder_Test
 		$parameters = array('test' => 'value');
 		$builder->setParameters($parameters);
 		$this->assertEquals($parameters, $builder->getParameters());
+	}
+
+	/**
+	 * @depends testSetContainer
+	 * @depends testSetScopeString
+	 */
+	function testGetSetScope()
+	{
+		$this->assertClassExists('Enject_Scope_Default');
+		$container = new Enject_Container();
+		$testScope = new Enject_Scope_Default();
+		$container->registerScope('test', $testScope);
+		$builder = $this->_getInstance();
+		$builder->setContainer($container);
+		$builder->setScope('test');
+		$this->assertEquals($testScope, $builder->getScope());
 	}
 	
 	/**
@@ -269,39 +317,6 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
-	 * @depends testInstance
-	 */
-	function testGetSharedDefault()
-	{
-		$builder = $this->_getInstance();
-		$this->assertFalse($builder->getShared());
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testSetShared()
-	{
-		$builder = $this->_getInstance();
-		$this->assertSame($builder, $builder->setShared());
-		$this->assertSame($builder, $builder->setShared(false));
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testGetShared()
-	{
-		$builder = $this->_getInstance();
-		$builder->setShared();
-		$this->assertTrue($builder->getShared());
-		$builder->setShared(false);
-		$this->assertFalse($builder->getShared());
-		$builder->setShared(true);
-		$this->assertTrue($builder->getShared());;
-	}
-
-	/**
 	 * @depends testSetClassname
 	 * @depends testSetContainer
 	 * @depends testTargetInstance
@@ -314,6 +329,25 @@ class Test_Enject_Value_Builder_Test
 		$this->assertType('Test_Enject_Target', $builder->resolve());
 	}
 
+	/**
+	 * @depends testResolve
+	 * @depends testSetScope
+	 */
+	function testCloneScope()
+	{
+		$scope = new Enject_Scope_Default();
+		$builder = $this->_getInstance();
+		$builder->setContainer(new Enject_Container());
+		$builder->setScope($scope);
+		$builder->setClassname('Test_Enject_Target_Mock');
+		$object = $builder->resolve();
+		$this->assertSame($object, $builder->resolve());
+		$instance = $builder->resolve();
+		$newScope = clone $scope;
+		$builder->setScope($newScope);
+		$this->assertNotSame($instance, $builder->resolve());
+	}
+	
 	/**
 	 * @depends testSetClassname
 	 * @depends testSetContainer
@@ -328,6 +362,32 @@ class Test_Enject_Value_Builder_Test
 		$builder->setClassname('Test_Enject_Value_Mock');
 		$builder->registerProperty('value', $target);
 		$this->assertSame($target, $builder->resolve());
+	}
+
+	/**
+	 * @depends testResolve
+	 */
+	function testResolveNoScope()
+	{
+		$builder = $this->_getInstance();
+		$builder->setContainer(new Enject_Container());
+		$builder->setScope('prototype');
+		$builder->setClassname('Test_Enject_Target_Mock');
+		$object = $builder->resolve();
+		$this->assertNotSame($object, $builder->resolve());
+		$this->assertEquals($object, $builder->resolve());
+	}
+
+	/**
+	 * @depends testResolve
+	 */
+	function testResolveScope()
+	{
+		$builder = $this->_getInstance();
+		$builder->setContainer(new Enject_Container());
+		$builder->setClassname('Test_Enject_Target_Mock');
+		$object = $builder->resolve();
+		$this->assertSame($object, $builder->resolve());
 	}
 
 	/**
@@ -360,31 +420,6 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
-	 * @depends testResolve
-	 */
-	function testResolveSingleton()
-	{
-		$builder = $this->_getInstance();
-		$builder->setContainer(new Enject_Container());
-		$builder->setClassname('Test_Enject_Target_Mock');
-		$builder->setShared();
-		$instance = $builder->resolve();
-		$this->assertSame($instance, $builder->resolve());
-	}
-
-	/**
-	 * @depends testResolve
-	 */
-	function testResolveNonsingleton()
-	{
-		$builder = $this->_getInstance();
-		$builder->setContainer(new Enject_Container());
-		$builder->setClassname('Test_Enject_Target_Mock');
-		$instance = $builder->resolve();
-		$this->assertNotSame($instance, $builder->resolve());
-	}
-
-	/**
 	 * @depends testGetTypes
 	 * @depends testResolve
 	 * @depends testValueInstance
@@ -407,25 +442,38 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
-	 * @depends testGetTypesValue
-	 * @depends testSetShared
+	 * @depends testResolveScope
+	 * @depends testValueInstance
 	 */
-	function testGetTypesSharedValue()
+	function testResolveScopeValue()
 	{
-		$target = new Test_Enject_Target_Mock();
 		$builder = $this->_getInstance();
-		$builder->setClassname('Test_Enject_Value_Mock');
 		$builder->setContainer(new Enject_Container());
-		$builder->registerProperty('value', $target);
-		$builder->setShared();
-		$builder->resolve();
-		$return = $builder->getTypes();
-		$expected = array(
-			'Test_Enject_Target' => 'Test_Enject_Target',
-			'Test_Enject_Target_Mock' => 'Test_Enject_Target_Mock',
-			'Test_Enject_Target_Mock_Parent' => 'Test_Enject_Target_Mock_Parent',
-			'Test_Enject_Target_Parent' => 'Test_Enject_Target_Parent',
-		);
-		$this->assertEquals($expected, $return);
+		$builder->setClassname('Test_Enject_Value_Mock');
+		$builder->setMode('value');
+		$object = $builder->resolve();
+		$this->assertSame($object, $builder->resolve());
+	}
+
+	/**
+	 * @depends testResolveScope
+	 * @depends testSetScopeString
+	 */
+	function testRemoveScope()
+	{
+		$this->assertClassExists('Test_Enject_Scope_Mock');
+		$scope = new Enject_Scope_Default();
+		$container = new Enject_Container();
+		$container->registerScope('test', $scope);
+		$builder = $this->_getInstance();
+		$builder->setContainer($container);
+		$builder->setScope('test');
+		$builder->setClassname('Test_Enject_Target_Mock');
+		$instance = $builder->resolve();
+		$scopeId = $scope->getScopeId();
+		$scope = new Test_Enject_Scope_Mock();
+		$scope->setScopeId($scopeId);
+		$container->registerScope('test', $scope);
+		$this->assertNotSame($instance, $builder->resolve());
 	}
 }
