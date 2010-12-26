@@ -94,6 +94,17 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testGetParametersEmpty()
+	{
+		$builder = $this->_getInstance();
+		$return = $builder->getParameters();
+		$this->assertTraversable($return);
+		$this->assertEquals(0, count($return));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testSetClassname()
 	{
 		$builder = $this->_getInstance();
@@ -150,17 +161,6 @@ class Test_Enject_Value_Builder_Test
 		$injection = reset($return);
 		$this->assertEquals($method, $injection->getMethod());
 		$this->assertEquals($parameters, $injection->getParameters());
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testGetParametersEmpty()
-	{
-		$builder = $this->_getInstance();
-		$return = $builder->getParameters();
-		$this->assertTraversable($return);
-		$this->assertEquals(0, count($return));
 	}
 
 	/**
