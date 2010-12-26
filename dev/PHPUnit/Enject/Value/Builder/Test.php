@@ -230,7 +230,7 @@ class Test_Enject_Value_Builder_Test
 	
 	/**
 	 * @depends testSetClassname
-	 * @depends testContainerInstance
+	 * @depends testSetContainer
 	 * @depends testTargetInstance
 	 */
 	function testGetTypes()
