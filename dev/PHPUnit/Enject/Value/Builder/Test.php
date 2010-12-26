@@ -151,18 +151,6 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
-	 * @depends testInstance
-	 * @depends testContainerInstance
-	 */
-	function testGetContainer()
-	{
-		$builder = $this->_getInstance();
-		$container = new Enject_Container();
-		$builder->setContainer($container);
-		$this->assertSame($container, $builder->getContainer());
-	}
-
-	/**
 	 * @depends testAddInjection
 	 */
 	function testGetInjection()
@@ -216,6 +204,17 @@ class Test_Enject_Value_Builder_Test
 		$builder = $this->_getInstance();
 		$builder->setClassName('Enject_Value_Mock');
 		$this->assertEquals('Enject_Value_Mock', $builder->getClassname());
+	}
+
+	/**
+	 * @depends testSetContainer
+	 */
+	function testGetContainer()
+	{
+		$builder = $this->_getInstance();
+		$container = new Enject_Container();
+		$builder->setContainer($container);
+		$this->assertSame($container, $builder->getContainer());
 	}
 	
 	/**
