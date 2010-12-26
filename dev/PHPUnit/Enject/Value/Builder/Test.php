@@ -35,15 +35,6 @@ class Test_Enject_Value_Builder_Test
 	}
 
 	/**
-	 * Ensure that a container can be created
-	 */
-	function testContainerInstance()
-	{
-		$this->assertClassExists('Enject_Container');
-		$container = new Enject_Container();
-	}
-
-	/**
 	 * Ensures that the mock target class exists and can be created
 	 */
 	function testTargetInstance()
@@ -120,13 +111,13 @@ class Test_Enject_Value_Builder_Test
 		$builder = $this->_getInstance();
 		$this->assertSame($builder, $builder->registerProperty('name', 'value'));
 	}
-
+	
 	/**
 	 * @depends testInstance
-	 * @depends testContainerInstance
 	 */
 	function testSetContainer()
 	{
+		$this->assertClassExists('Enject_Container');
 		$builder = $this->_getInstance();
 		$container = $builder->setContainer(new Enject_Container());
 		$this->assertSame($builder, $container);
@@ -140,6 +131,7 @@ class Test_Enject_Value_Builder_Test
 		$builder = $this->_getInstance();
 		$this->assertSame($builder, $builder->setClassName('Enject_Value_Mock'));
 	}
+	
 	/**
 	 * @depends testInstance
 	 */
