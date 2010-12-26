@@ -115,6 +115,15 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testRegisterProperty()
+	{
+		$builder = $this->_getInstance();
+		$this->assertSame($builder, $builder->registerProperty('name', 'value'));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testSetClassname()
 	{
 		$builder = $this->_getInstance();
@@ -258,15 +267,6 @@ class Test_Enject_Value_Builder_Test
 		$this->assertFalse($builder->getShared());
 		$builder->setShared(true);
 		$this->assertTrue($builder->getShared());;
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testRegisterProperty()
-	{
-		$builder = $this->_getInstance();
-		$this->assertSame($builder, $builder->registerProperty('name', 'value'));
 	}
 
 	/**
