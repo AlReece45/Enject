@@ -153,6 +153,16 @@ class Test_Enject_Value_Builder_Test
 
 	/**
 	 * @depends testInstance
+	 */
+	function testSetParameters()
+	{
+		$builder = $this->_getInstance();
+		$return = $builder->setParameters(array('test' => 'value'));
+		$this->assertSame($builder, $return);
+	}
+
+	/**
+	 * @depends testInstance
 	 * @depends testContainerInstance
 	 */
 	function testGetContainer()
@@ -193,16 +203,6 @@ class Test_Enject_Value_Builder_Test
 		$this->assertTraversable($return);
 		$this->assertEquals(1, count($return));
 		$this->assertEquals('value', $return['test']);
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testSetParameters()
-	{
-		$builder = $this->_getInstance();
-		$return = $builder->setParameters(array('test' => 'value'));
-		$this->assertSame($builder, $return);
 	}
 
 	/**
