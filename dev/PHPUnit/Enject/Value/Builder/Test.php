@@ -105,6 +105,16 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testRegisterParameter()
+	{
+		$builder = $this->_getInstance();
+		$return = $builder->registerParameter('test', 'value');
+		$this->assertSame($builder, $return);
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testSetClassname()
 	{
 		$builder = $this->_getInstance();
@@ -162,17 +172,7 @@ class Test_Enject_Value_Builder_Test
 		$this->assertEquals($method, $injection->getMethod());
 		$this->assertEquals($parameters, $injection->getParameters());
 	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testRegisterParameter()
-	{
-		$builder = $this->_getInstance();
-		$return = $builder->registerParameter('test', 'value');
-		$this->assertSame($builder, $return);
-	}
-
+	
 	/**
 	 * @depends testRegisterParameter
 	 */
