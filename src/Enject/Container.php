@@ -32,6 +32,17 @@ class Enject_Container
 	protected $_components = array();
 
 	/**
+	 * @var Boolean
+	 */
+	protected $_defaultScopesRegistered = false;
+
+	/**
+	 * Enable the default scopes (Default and prototype)
+	 * @var Boolean
+	 */
+	protected $_enableDefaultScopes = true;
+
+	/**
 	 * Available (registered) injectors
 	 * @var Enject_Injector[]
 	 * @see inject()
@@ -46,12 +57,36 @@ class Enject_Container
 	protected $_defaultInjectors = array();
 
 	/**
+	 * All of the registered scopes
+	 * @var stdClass[]
+	 */
+	protected $_scopes = array();
+
+	/**
 	 * Available (registered) types
 	 * @var Mixed[]
 	 * @see getComponent()
 	 * @see registerComponent()
 	 */
 	protected $_types = array();
+
+	/**
+	 * @return Enject_Container
+	 */
+	function disableDefaultScopes()
+	{
+		$this->_enableDefaultScopes = false;
+		return $this;
+	}
+
+	/**
+	 * @return Enject_Container
+	 */
+	function enableDefaultScopes()
+	{
+		$this->_enableDefaultScopes = true;
+		return $this;
+	}
 
 	/**
 	 * Returns an object builder.
@@ -143,6 +178,34 @@ class Enject_Container
 	}
 
 	/**
+	 * @param String $scope
+	 * @return Enject_Scope
+	 */
+	function getScope($scope = 'default')
+	{
+		// first check to see if the scope is already registered
+		if(!isset($this->_scopes[$scope]))
+		{
+			// if the scope isn't registered, and default scopes are enabled
+			// registere the default scopes
+			if($this->_enableDefaultScopes && !$this->_defaultScopesRegistered)
+			{
+				require_once 'Enject/Scope/Default.php';
+				$this->registerScope('default', new Enject_Scope_Default());
+				$this->registerScope('prototype', new stdClass());
+				$this->_defaultScopesRegistered = true;
+			}
+			if(!isset($this->_scopes[$scope]))
+			{
+				require_once 'Enject/Exception.php';
+				throw new Enject_Exception('Scope [' . $scope
+					 . '] is not registered');
+			}
+		}
+		return $this->_scopes[$scope];
+	}
+
+	/**
 	 * Registers a component (an easily reusable injection object)
 	 * @param String $name
 	 * @param Mixed $component
@@ -173,6 +236,23 @@ class Enject_Container
 			$this->_injectors[$typeName] = new SplObjectStorage();
 		}
 		$this->_injectors[$typeName]->attach($injector, $injector);
+		return $this;
+	}
+
+	/**
+	 * Registers a scope.
+	 *
+	 * Scopes are used by {@link Enject_Value_Builder} (or another type of
+	 * {@link Enject_Value} to determine how to share objects. Scopes do not
+	 * need to be an object or implement any interface. Only scopes that
+	 * implement {@link Enject_Scope} allow for shared objects.
+	 * @param String $name
+	 * @param Mixed $scope
+	 * @return Enject_Container
+	 */
+	function registerScope($name, $scope)
+	{
+		$this->_scopes[$name] = $scope;
 		return $this;
 	}
 

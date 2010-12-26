@@ -57,6 +57,55 @@ class Test_Enject_ContainerTest
 
 	/**
 	 * @depends testInstance
+	 * @throws Enject_Exception
+	 */
+	function testEnableDefaultScopes()
+	{
+		$container = $this->_getInstance();
+		$this->assertSame($container, $container->enableDefaultScopes());
+	}
+
+	/**
+	 * @depends testInstance
+	 * @throws Enject_Exception
+	 */
+	function testDisableDefaultScopes()
+	{
+		$container = $this->_getInstance();
+		$this->assertSame($container, $container->disableDefaultScopes());
+	}
+
+	/**
+	 * @depends testInstance
+	 */
+	function testRegisterScope()
+	{
+		$this->assertClassExists('Enject_Scope_Default');
+		$container = $this->_getInstance();
+		$scope = new Enject_Scope_Default();
+		$this->assertSame($container, $container->registerScope('test', $scope));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
+	function testEnabledDefaultScopeDefault()
+	{
+		$container = $this->_getInstance();
+		$this->assertType('Enject_Scope', $container->getScope('default'));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
+	function testEnabledDefaultScopePrototype()
+	{
+		$container = $this->_getInstance();
+		$this->assertType('stdClass', $container->getScope('prototype'));
+	}
+
+	/**
+	 * @depends testInstance
 	 */
 	function testGetComponent()
 	{
@@ -108,6 +157,16 @@ class Test_Enject_ContainerTest
 		$container = $this->_getInstance();
 		$return = $container->registerInjector('Test_Enject_Target_Mock', $expected);
 		$this->assertEquals($container, $return);
+	}
+
+	/**
+	 * @depends testInstance
+	 * @expectedException Enject_Exception
+	 */
+	function testGetScopeException()
+	{
+		$container = $this->_getInstance();
+		$container->getScope('test');
 	}
 
 	/**
@@ -371,6 +430,17 @@ class Test_Enject_ContainerTest
 		// make sure that the objects are now marked as injected
 		$this->assertTrue($injector1->isObjectInjected($target));
 		$this->assertTrue($injector2->isObjectInjected($target));
+	}
+
+	/**
+	 * @depends testRegisterScope
+	 */
+	function testGetScope()
+	{
+		$container = $this->_getInstance();
+		$scope = new Enject_Scope_Default();
+		$container->registerScope('test', $scope);
+		$this->assertSame($scope, $container->getScope('test'));
 	}
 }
 
