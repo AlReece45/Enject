@@ -47,18 +47,6 @@ class Test_Enject_Value_Type_Test
 
 	/**
 	 * @depends testInstance
-	 * @depends testSetContainer
-	 */
-	function testGetContainer()
-	{
-		$builder = $this->_getInstance();
-		$container = new Enject_Container();
-		$builder->setContainer($container);
-		$this->assertSame($container, $builder->getContainer());
-	}
-
-	/**
-	 * @depends testInstance
 	 */
 	function testSetType()
 	{
