@@ -11,6 +11,7 @@
  */
 require_once 'Enject/Injection/Collection.php';
 require_once 'Enject/Scope/Value.php';
+require_once 'Enject/Value/Base.php';
 require_once 'Enject/Value.php';
 
 /**
@@ -18,24 +19,11 @@ require_once 'Enject/Value.php';
  * object when it is resolved.
  */
 class Enject_Value_Builder
+	extends Enject_Value_Base
 	implements Enject_Injection_Collection,
 		Enject_Scope_Value,
 		Enject_Value
 {
-	/**
-	 * Default mode to use when building objects. Currently only affects one 
-	 * thing: objects that implement Enject_Value. In the default mode, it
-	 * resolves them. To return a Builder (without resolving it), use the
-	 * "builder" mode
-	 */
-	const MODE_DEFAULT = 'default';
-
-	/**
-	 * Use this mode when you want to consturct a {@link Enject_Value} without
-	 * having it resolved.
-	 */
-	const MODE_VALUE = 'value';
-	
 	/**
 	 * @var String
 	 */
@@ -57,12 +45,6 @@ class Enject_Value_Builder
 	 * @var Mixed[]
 	 */
 	protected $_instances = array();
-
-	/**
-	 * Mode to use for resolving objects
-	 * @var String
-	 */
-	protected $_mode = self::MODE_DEFAULT;
 
 	/**
 	 * The scope this will use to determine whether to recreate an object or
@@ -122,19 +104,6 @@ class Enject_Value_Builder
 	}
 
 	/**
-	 * @return String
-	 */
-	function getContainer()
-	{
-		if(!$this->_container instanceOf Enject_Container)
-		{
-			require_once 'Enject/Exception.php';
-			throw new Enject_Exception('Container not set in builder');
-		}
-		return $this->_container;
-	}
-
-	/**
 	 * @return Enject_Injection_Collection
 	 */
 	function getInjectionCollection()
@@ -160,15 +129,6 @@ class Enject_Value_Builder
 	function getInjections()
 	{
 		return $this->getInjectionCollection()->getInjections();
-	}
-
-	/**
-	 * Gets the currently set build mode
-	 * @see setMode()
-	 */
-	function getMode()
-	{
-		return $this->_mode;
 	}
 
 	/**
@@ -216,34 +176,12 @@ class Enject_Value_Builder
 	}
 
 	/**
-	 * @param Enject_Container $className
-	 * @return Enject_Value_Builder
-	 */
-	function setContainer($container)
-	{
-		$this->_container = $container;
-		return $this;
-	}
-
-	/**
 	 * @param String $className
 	 * @return Enject_Value_Builder
 	 */
 	function setClassname($className)
 	{
 		$this->_className = $className;
-		return $this;
-	}
-
-	/**
-	 * Sets the resolving mode:
-	 * @see MODE_DEFAULT
-	 * @see MODE_VALUE
-	 * @return Enject_Value_Builder
-	 */
-	function setMode($mode)
-	{
-		$this->_mode = $mode;
 		return $this;
 	}
 
@@ -313,13 +251,7 @@ class Enject_Value_Builder
 	 */
 	function resolve()
 	{
-		$return = $this->_getUnresolvedInstance();
-		if($return instanceOf Enject_Value
-			 && $this->getMode() != self::MODE_VALUE)
-		{
-			$return = $return->resolve();
-		}
-		return $return;
+		return $this->_resolve($this->_getUnresolvedInstance());
 	}
 
 	/**
