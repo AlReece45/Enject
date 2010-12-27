@@ -10,32 +10,21 @@
  * @package Enject
  */
 require_once 'Enject/Value.php';
+require_once 'Enject/Value/Base.php';
 
 /**
  * This {@link Enject_Value} is responsible for refering to a Component
  * @see Enject_Container::registerComponent()
  */
 class Enject_Value_Component
+	extends Enject_Value_Base
 	implements Enject_Value
 {
-	/**
-	 * @var Enject_Container
-	 */
-	protected $_container;
-
 	/**
 	 * The name of the component
 	 * @var String
 	 */
 	protected $_name;
-
-	/**
-	 * @return Enject_Container
-	 */
-	function getContainer()
-	{
-		return $this->_container;
-	}
 
 	/**
 	 * Gets the name of the component that will be used when resolving
@@ -61,16 +50,6 @@ class Enject_Value_Component
 	}
 
 	/**
-	 * @param Enject_Container $component
-	 * @return Enject_Value_Component
-	 */
-	function setContainer($container)
-	{
-		$this->_container = $container;
-		return $this;
-	}
-
-	/**
 	 * @param String $component
 	 * @return Enject_Value_Component
 	 */
@@ -87,11 +66,6 @@ class Enject_Value_Component
 	function resolve()
 	{
 		$container = $this->getContainer();
-		$return = $container->resolveComponent($this->getName());
-		if($return instanceOf Enject_Value)
-		{
-			$return = $return->resolve($container);
-		}
-		return $return;
+		return $this->_resolve($container->resolveComponent($this->getName()));
 	}
 }
