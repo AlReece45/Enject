@@ -36,36 +36,14 @@ class Test_Enject_Value_Component_Test
 	}
 
 	/**
-	 * Tests to make sure that the {@link Enject_Container} class
-	 * is defined and constructable
-	 */
-	function testContainerInstance()
-	{
-		$this->assertClassExists('Enject_Container');
-		$container = new Enject_Container();
-	}
-
-	/**
 	 * @depends testInstance
-	 * @depends testContainerInstance
 	 */
 	function testSetContainer()
 	{
+		$this->assertClassExists('Enject_Container');
 		$builder = $this->_getInstance();
 		$return = $builder->setContainer(new Enject_Container());
 		$this->assertSame($builder, $return);
-	}
-
-	/**
-	 * @depends testInstance
-	 * @depends testContainerInstance
-	 */
-	function testGetContainer()
-	{
-		$builder = $this->_getInstance();
-		$container = new Enject_Container();
-		$builder->setContainer($container);
-		$this->assertSame($container, $builder->getContainer());
 	}
 
 	/**
@@ -89,7 +67,7 @@ class Test_Enject_Value_Component_Test
 
 	/**
 	 * @depends testSetName
-	 * @depends testContainerInstance
+	 * @depends testSetContainer
 	 */
 	function testGetTypes()
 	{
@@ -116,7 +94,7 @@ class Test_Enject_Value_Component_Test
 
 	/**
 	 * @depends testSetName
-	 * @depends testContainerInstance
+	 * @depends testSetContainer
 	 */
 	function testResolve()
 	{
@@ -132,7 +110,7 @@ class Test_Enject_Value_Component_Test
 
 	/**
 	 * @depends testSetName
-	 * @depends testContainerInstance
+	 * @depends testSetContainer
 	 */
 	function testResolveValue()
 	{
