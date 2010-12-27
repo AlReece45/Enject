@@ -63,25 +63,6 @@ class Test_Enject_Value_Builder_Test
 
 	/**
 	 * @depends testInstance
-	 * @expectedException Enject_Exception
-	 */
-	function testGetContainerException()
-	{
-		$builder = $this->_getInstance();
-		$builder->getContainer();
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testGetModeDefault()
-	{
-		$builder = $this->_getInstance();
-		$this->assertEquals('default', $builder->getMode());
-	}
-
-	/**
-	 * @depends testInstance
 	 */
 	function testGetInjectionCollection()
 	{
@@ -125,21 +106,21 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
-	function testSetMode()
-	{
-		$builder = $this->_getInstance();
-		$this->assertSame($builder, $builder->setMode('value'));
-	}
-
-	/**
-	 * @depends testInstance
-	 */
 	function testRegisterProperty()
 	{
 		$builder = $this->_getInstance();
 		$this->assertSame($builder, $builder->registerProperty('name', 'value'));
 	}
-	
+
+	/**
+	 * @depends testInstance
+	 */
+	function testSetClassname()
+	{
+		$builder = $this->_getInstance();
+		$this->assertSame($builder, $builder->setClassName('Enject_Value_Mock'));
+	}
+
 	/**
 	 * @depends testInstance
 	 */
@@ -154,10 +135,10 @@ class Test_Enject_Value_Builder_Test
 	/**
 	 * @depends testInstance
 	 */
-	function testSetClassname()
+	function testSetMode()
 	{
 		$builder = $this->_getInstance();
-		$this->assertSame($builder, $builder->setClassName('Enject_Value_Mock'));
+		$this->assertSame($builder, $builder->setMode('default'));
 	}
 	
 	/**
@@ -224,27 +205,6 @@ class Test_Enject_Value_Builder_Test
 		$builder = $this->_getInstance();
 		$builder->setClassName('Enject_Value_Mock');
 		$this->assertEquals('Enject_Value_Mock', $builder->getClassname());
-	}
-
-	/**
-	 * @depends testSetMode
-	 */
-	function testGetSetMode()
-	{
-		$builder = $this->_getInstance();
-		$builder->setMode('builder');
-		$this->assertEquals('builder', $builder->getMode());
-	}
-
-	/**
-	 * @depends testInstance
-	 */
-	function testGetContainer()
-	{
-		$builder = $this->_getInstance();
-		$container = new Enject_Container();
-		$builder->setContainer($container);
-		$this->assertSame($container, $builder->getContainer());
 	}
 
 	/**
