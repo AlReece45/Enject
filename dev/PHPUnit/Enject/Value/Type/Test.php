@@ -35,21 +35,11 @@ class Test_Enject_Value_Type_Test
 	}
 
 	/**
-	 * Tests to make sure a Container Class exists
-	 * and can be created.
-	 */
-	function testContainerInstance()
-	{
-		$this->assertClassExists('Enject_Container');
-		$container = new Enject_Container();
-	}
-
-	/**
 	 * @depends testInstance
-	 * @depends testContainerInstance
 	 */
 	function testSetContainer()
 	{
+		$this->assertClassExists('Enject_Container');
 		$builder = $this->_getInstance();
 		$return = $builder->setContainer(new Enject_Container());
 		$this->assertSame($builder, $return);
@@ -57,7 +47,7 @@ class Test_Enject_Value_Type_Test
 
 	/**
 	 * @depends testInstance
-	 * @depends testContainerInstance
+	 * @depends testSetContainer
 	 */
 	function testGetContainer()
 	{
@@ -88,7 +78,7 @@ class Test_Enject_Value_Type_Test
 
 	/**
 	 * @depends testSetType
-	 * @depends testContainerInstance
+	 * @depends testSetContainer
 	 */
 	function testGetTypes()
 	{
@@ -115,7 +105,7 @@ class Test_Enject_Value_Type_Test
 
 	/**
 	 * @depends testSetType
-	 * @depends testContainerInstance
+	 * @depends testSetContainer
 	 */
 	function testResolve()
 	{
