@@ -10,32 +10,22 @@
  * @package Enject
  */
 require_once 'Enject/Value.php';
+require_once 'Enject/Value/Base.php';
 
 /**
  * This {@link Enject_Value} is responsible for resolving a value to a type.
  * @see Enject_Container::getInstance()
  */
 class Enject_Value_Type
+	extends Enject_Value_Base
 	implements Enject_Value
 {
-	/**
-	 * @var Enject_Container
-	 */
-	protected $_container;
 
 	/**
 	 * The name of the type that will be resolved
 	 * @var String
 	 */
 	protected $_type;
-
-	/**
-	 * @return Enject_Container
-	 */
-	function getContainer()
-	{
-		return $this->_container;
-	}
 
 	/**
 	 * Gets the name of the type that will be resolved.
@@ -68,17 +58,8 @@ class Enject_Value_Type
 	 */
 	function resolve()
 	{
-		return $this->getContainer()->resolveType($this->getType());
-	}
-
-	/**
-	 * @param Enject_Container $component
-	 * @return Enject_Value_Type
-	 */
-	function setContainer($container)
-	{
-		$this->_container = $container;
-		return $this;
+		$container = $this->getContainer();
+		return $this->_resolve($container->resolveType($this->getType()));
 	}
 
 	/**
