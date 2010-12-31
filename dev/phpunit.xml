@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="PHPUnit/bootstrap.php">
+<phpunit
+	bootstrap="PHPUnit/bootstrap.php"
+	strict="true">
 	<testsuites>
 		<testsuite name="Enject Test Suite">
 			<directory>PHPUnit</directory>
