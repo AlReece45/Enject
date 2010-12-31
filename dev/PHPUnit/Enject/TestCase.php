@@ -58,7 +58,7 @@ abstract class Test_Enject_TestCase
 	 */
 	function assertInterfaceExists($class)
 	{
-		if(!interface_exists($class))
+		if(!class_exists($class) && !interface_exists($class))
 		{
 			$this->_loadClass($class);
 		}
