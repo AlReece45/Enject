@@ -9,9 +9,9 @@
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
+require_once 'Enject/Container/Value/Base.php';
 require_once 'Enject/Injection/Collection.php';
 require_once 'Enject/Scope/Listener.php';
-require_once 'Enject/Value/Base.php';
 require_once 'Enject/Value.php';
 
 /**
@@ -19,7 +19,7 @@ require_once 'Enject/Value.php';
  * object when it is resolved.
  */
 class Enject_Value_Builder
-	extends Enject_Value_Base
+	extends Enject_Container_Value_Base
 	implements Enject_Injection_Collection,
 		Enject_Scope_Listener,
 		Enject_Value

@@ -13,7 +13,7 @@
 /**
  * Base object for commonly used functionality in the builders
  */
-abstract class Enject_Value_Base
+abstract class Enject_Container_Value_Base
 {
 	/**
 	 * Default mode to use when resolving objects. Currently only affects one
@@ -66,7 +66,7 @@ abstract class Enject_Value_Base
 
 	/**
 	 * @param Enject_Container_Base $component
-	 * @return Enject_Value_Base
+	 * @return Enject_Container_Value_Base
 	 */
 	function setContainer($container)
 	{
@@ -78,7 +78,7 @@ abstract class Enject_Value_Base
 	 * Sets the resolving mode:
 	 * @see MODE_DEFAULT
 	 * @see MODE_VALUE
-	 * @return Enject_Value_Base
+	 * @return Enject_Container_Value_Base
 	 */
 	function setMode($mode)
 	{

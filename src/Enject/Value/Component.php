@@ -9,15 +9,15 @@
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
+require_once 'Enject/Container/Value/Base.php';
 require_once 'Enject/Value.php';
-require_once 'Enject/Value/Base.php';
 
 /**
  * This {@link Enject_Value} is responsible for refering to a Component
  * @see Enject_Container_Base::registerComponent()
  */
 class Enject_Value_Component
-	extends Enject_Value_Base
+	extends Enject_Container_Value_Base
 	implements Enject_Value
 {
 	/**

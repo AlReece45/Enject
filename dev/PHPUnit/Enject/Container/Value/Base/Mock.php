@@ -9,13 +9,13 @@
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
-require_once 'Enject/Value/Base.php';
+require_once 'Enject/Container/Value/Base.php';
 
 /**
  * Dummy class used to test {@link Enject_Value_Base}
  */
-class Test_Enject_Value_Base_Mock
-	extends Enject_Value_Base
+class Test_Enject_Container_Value_Base_Mock
+	extends Enject_Container_Value_Base
 {
 	/**
 	 * Test the internal API

@@ -22,7 +22,7 @@ class Test_Enject_Value_BaseTest
 	 */
 	protected function _getInstance()
 	{
-		return new Test_Enject_Value_Base_Mock();
+		return new Test_Enject_Container_Value_Base_Mock();
 	}
 
 	/**
@@ -30,8 +30,8 @@ class Test_Enject_Value_BaseTest
 	 */
 	function testInstance()
 	{
-		$this->assertClassExists('Test_Enject_Value_Base_Mock');
-		$builder = new Test_Enject_Value_Base_Mock();
+		$this->assertClassExists('Test_Enject_Container_Value_Base_Mock');
+		$builder = new Test_Enject_Container_Value_Base_Mock();
 	}
 
 	/**
@@ -137,7 +137,7 @@ class Test_Enject_Value_BaseTest
 		$this->assertClassExists('Test_Enject_Value_Mock');
 		$value = new Test_Enject_Value_Mock();
 		$builder = $this->_getInstance();
-		$builder->setMode(Enject_Value_Base::MODE_VALUE);
+		$builder->setMode(Enject_Container_Value_Base::MODE_VALUE);
 		$this->assertSame($value, $builder->resolve($value));
 	}
 }

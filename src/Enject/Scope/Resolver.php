@@ -135,7 +135,7 @@ class Enject_Scope_Resolver
 
 	/**
 	 * @param Enject_Container $component
-	 * @return Enject_Value_Base
+	 * @return Enject_Container_Value_Base
 	 */
 	function setContainer($container)
 	{
