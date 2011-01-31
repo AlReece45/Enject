@@ -30,11 +30,6 @@ class Enject_Value_Builder
 	protected $_className;
 
 	/**
-	 * @var Enject_Container
-	 */
-	protected $_container;
-
-	/**
 	 * @var Enject_Injection_Collection
 	 */
 	protected $_injectionCollection;
