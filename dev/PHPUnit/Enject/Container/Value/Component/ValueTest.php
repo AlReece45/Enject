@@ -24,13 +24,13 @@ class Test_Enject_Value_Component_ValueTest
 	 */
 	protected function _getValue()
 	{
-		$this->assertClassExists('Enject_Value_Component');
+		$this->assertClassExists('Enject_Container_Value_Component');
 		$this->assertClassExists('Enject_Container_Base');
 		$this->assertClassExists('Test_Enject_Target_Mock');
 		$value = new Test_Enject_Target_Mock();
 		$container = new Enject_Container_Base();
 		$container->registerComponent('test.target.mock', $value);
-		$return = new Enject_Value_Component();
+		$return = new Enject_Container_Value_Component();
 		$return->setName('test.target.mock');
 		$return->setContainer($container);
 		return $return;

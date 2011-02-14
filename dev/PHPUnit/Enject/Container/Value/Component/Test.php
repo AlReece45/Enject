@@ -14,15 +14,15 @@ require_once 'Enject/TestCase.php';
 /*
  * @see Enject_Blueprint_Default
  */
-class Test_Enject_Value_Component_Test
+class Test_Enject_Container_Value_Component_Test
 	extends Test_Enject_TestCase
 {
 	/**
-	 * @return Enject_Value_Component
+	 * @return Enject_Container_Value_Component
 	 */
 	protected function _getInstance()
 	{
-		return new Enject_Value_Component();
+		return new Enject_Container_Value_Component();
 	}
 
 	/**
@@ -31,8 +31,8 @@ class Test_Enject_Value_Component_Test
 	 */
 	function testInstance()
 	{
-		$this->assertClassExists('Enject_Value_Component');
-		$builder = new Enject_Value_Component();
+		$this->assertClassExists('Enject_Container_Value_Component');
+		$builder = new Enject_Container_Value_Component();
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Test_Enject_Value_Component_Test
 		}
 		$expected = array(
 			 'Test_Enject_TestCase' => 'Test_Enject_TestCase',
-			 'Test_Enject_Value_Component_Test' => 'Test_Enject_Value_Component_Test',
+			 'Test_Enject_Container_Value_Component_Test' => 'Test_Enject_Container_Value_Component_Test',
 		);
 		$this->assertEquals($expected, $types);
 	}

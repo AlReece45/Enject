@@ -62,7 +62,7 @@ class Test_Enject_Container_Base_Test
 	{
 		$container = $this->_getInstance();
 		$component = $container->getComponent('test.enject.target');
-		$this->assertType('Enject_Value_Component', $component);
+		$this->assertType('Enject_Container_Value_Component', $component);
 		$this->assertSame($container, $component->getContainer());
 		$this->assertSame('test.enject.target', $component->getName());
 	}

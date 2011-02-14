@@ -15,7 +15,7 @@ require_once 'Enject/Container/Value/Base.php';
  * This {@link Enject_Value} is responsible for refering to a Component
  * @see Enject_Container_Base::registerComponent()
  */
-class Enject_Value_Component
+class Enject_Container_Value_Component
 	extends Enject_Container_Value_Base
 {
 	/**
@@ -35,8 +35,8 @@ class Enject_Value_Component
 	}
 
 	/**
-	 * Gets the types (className, parent classes, and interfaces) of the object
-	 * that will be returned.
+	 * Gets the types (className, parent classes, and interfaces of the object
+	 * that will; be returned.
 	 * @return String[]
 	 * @uses Enject_Tools::getTypes()
 	 */
@@ -49,7 +49,7 @@ class Enject_Value_Component
 
 	/**
 	 * @param String $component
-	 * @return Enject_Value_Component
+	 * @return Enject_Container_Value_Component
 	 */
 	function setName($name)
 	{

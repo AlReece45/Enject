@@ -81,8 +81,8 @@ class Enject_Container_Base
 	 */
 	function getComponent($name)
 	{
-		require_once 'Enject/Value/Component.php';
-		$return = new Enject_Value_Component();
+		require_once 'Enject/Container/Value/Component.php';
+		$return = new Enject_Container_Value_Component();
 		$return->setContainer($this);
 		$return->setName($name);
 		return $return;
