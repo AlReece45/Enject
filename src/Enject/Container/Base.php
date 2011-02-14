@@ -239,7 +239,7 @@ class Enject_Container_Base
 	/**
 	 * @param String $name
 	 * @return Mixed
-	 * @throws Enject_Exception
+	 * @throws Enject_Container_ComponentUnavailableException
 	 * @uses $_components
 	 */
 	function resolveComponent($name)
@@ -247,8 +247,8 @@ class Enject_Container_Base
 		$name = strtolower($name);
 		if(!isset($this->_components[$name]))
 		{
-			require_once 'Enject/Exception.php';
-			throw new Enject_Exception("Component [$name] unavailable");
+			require_once 'Enject/Container/ComponentUnavailableException.php';
+			throw new Enject_Container_ComponentUnavailableException($name);
 		}
 		return $this->_components[$name];
 	}
