@@ -14,15 +14,15 @@ require_once 'Enject/TestCase.php';
 /*
  * @see Enject_Blueprint_Default
  */
-class Test_Enject_Value_Type_Test
+class Test_Enject_Container_Value_Type_Test
 	extends Test_Enject_TestCase
 {
 	/**
-	 * @return Enject_Value_Type
+	 * @return Enject_Container_Value_Type
 	 */
 	protected function _getInstance()
 	{
-		return new Enject_Value_Type();
+		return new Enject_Container_Value_Type();
 	}
 
 	/**
@@ -30,8 +30,8 @@ class Test_Enject_Value_Type_Test
 	 */
 	function testInstance()
 	{
-		$this->assertClassExists('Enject_Value_Type');
-		$builder = new Enject_Value_Type();
+		$this->assertClassExists('Enject_Container_Value_Type');
+		$builder = new Enject_Container_Value_Type();
 	}
 
 	/**
@@ -71,10 +71,10 @@ class Test_Enject_Value_Type_Test
 	function testGetTypes()
 	{
 		$container = new Enject_Container_Base();
-		$container->registerType('Test_Enject_Value_Type_Test', $this);
+		$container->registerType('Test_Enject_Container_Value_Type_Test', $this);
 		$builder = $this->_getInstance();
 		$builder->setContainer($container);
-		$builder->setType('Test_Enject_Value_Type_Test');
+		$builder->setType('Test_Enject_Container_Value_Type_Test');
 		$types = $builder->getTypes();
 		foreach($types as $k => $type)
 		{
@@ -86,7 +86,7 @@ class Test_Enject_Value_Type_Test
 		}
 		$expected = array(
 			 'Test_Enject_TestCase' => 'Test_Enject_TestCase',
-			 'Test_Enject_Value_Type_Test' => 'Test_Enject_Value_Type_Test',
+			 'Test_Enject_Container_Value_Type_Test' => 'Test_Enject_Container_Value_Type_Test',
 		);
 		$this->assertEquals($expected, $types);
 	}

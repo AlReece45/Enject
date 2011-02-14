@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
@@ -15,7 +15,7 @@ require_once 'Enject/Container/Value/Base.php';
  * This {@link Enject_Value} is responsible for resolving a value to a type.
  * @see Enject_Container_Base::getInstance()
  */
-class Enject_Value_Type
+class Enject_Container_Value_Type
 	extends Enject_Container_Value_Base
 {
 
@@ -63,7 +63,7 @@ class Enject_Value_Type
 	/**
 	 * Sets the type that will be used when resolved.
 	 * @param String $type
-	 * @return Enject_Value_Type
+	 * @return Enject_Container_Value_Type
 	 */
 	function setType($type)
 	{

@@ -115,8 +115,8 @@ class Enject_Container_Base
 	 */
 	function getType($type)
 	{
-		require_once 'Enject/Value/Type.php';
-		$return = new Enject_Value_Type();
+		require_once 'Enject/Container/Value/Type.php';
+		$return = new Enject_Container_Value_Type();
 		$return->setContainer($this);
 		$return->setType($type);
 		return $return;

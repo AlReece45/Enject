@@ -14,7 +14,7 @@ require_once 'Enject/ValueTestCase.php';
 /*
  * @see Enject_Value
  */
-class Test_Enject_Value_Type_ValueTest
+class Test_Enject_Container_Value_Type_ValueTest
 	extends Test_Enject_ValueTestCase
 {
 	/**
@@ -25,12 +25,12 @@ class Test_Enject_Value_Type_ValueTest
 	protected function _getValue()
 	{
 		$this->assertClassExists('Test_Enject_Target_Mock');
-		$this->assertClassExists('Enject_Value_Type');
+		$this->assertClassExists('Enject_Container_Value_Type');
 		$this->assertClassExists('Enject_Container_Base');
 		$value = new Test_Enject_Target_Mock();
 		$container = new Enject_Container_Base();
 		$container->registerType('Test_Enject_Target_Mock', $value);
-		$return = new Enject_Value_Type();
+		$return = new Enject_Container_Value_Type();
 		$return->setType('Test_Enject_Target_Mock');
 		$return->setContainer($container);
 		return $return;
