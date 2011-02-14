@@ -1,19 +1,21 @@
 <?php
 /*
  * Enject Library
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
+require_once 'Enject/Container/Value.php';
 
 /**
  * Base object for commonly used functionality in the builders
  */
 abstract class Enject_Container_Value_Base
+	implements Enject_Container_Value
 {
 	/**
 	 * Default mode to use when resolving objects. Currently only affects one

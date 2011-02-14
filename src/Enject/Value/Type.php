@@ -10,7 +10,6 @@
  * @package Enject
  */
 require_once 'Enject/Container/Value/Base.php';
-require_once 'Enject/Value.php';
 
 /**
  * This {@link Enject_Value} is responsible for resolving a value to a type.
@@ -18,7 +17,6 @@ require_once 'Enject/Value.php';
  */
 class Enject_Value_Type
 	extends Enject_Container_Value_Base
-	implements Enject_Value
 {
 
 	/**

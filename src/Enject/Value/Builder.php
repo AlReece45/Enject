@@ -12,7 +12,6 @@
 require_once 'Enject/Container/Value/Base.php';
 require_once 'Enject/Injection/Collection.php';
 require_once 'Enject/Scope/Listener.php';
-require_once 'Enject/Value.php';
 
 /**
  * This {@link Enject_Value} is responsible for creating AND injecting and
@@ -21,8 +20,7 @@ require_once 'Enject/Value.php';
 class Enject_Value_Builder
 	extends Enject_Container_Value_Base
 	implements Enject_Injection_Collection,
-		Enject_Scope_Listener,
-		Enject_Value
+		Enject_Scope_Listener
 {
 	/**
 	 * @var String
