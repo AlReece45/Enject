@@ -138,9 +138,8 @@ class Enject_Container_Base
 	{
 		if(!isset($this->_scopes[$scope]))
 		{
-			require_once 'Enject/Exception.php';
-			throw new Enject_Exception('Scope [' . $scope
-				. '] is not registered');
+			require_once 'Enject/Container/ScopeUnavailableException.php';
+			throw new Enject_Container_ScopeUnavailableException($scope);
 		}
 		return $this->_scopes[$scope];
 	}
