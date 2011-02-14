@@ -32,14 +32,8 @@ class Enject_Container_Base
 	protected $_components = array();
 
 	/**
-	 * Default injectors to use
-	 * @see getInjector()
-	 */
-	protected $_defaultInjectors = array();
-
-	/**
 	 * Available (registered) injectors
-	 * @var Enject_Injector[]
+	 * @var Enject_Container_Injector[]
 	 * @see inject()
 	 * @see registerInjector()
 	 */
@@ -105,13 +99,12 @@ class Enject_Container_Base
 	function getInjector($name)
 	{
 		$name = strtolower($name);
-		if(!isset($this->_defaultInjectors[$name]))
+		if(!isset($this->_injectors[$name]))
 		{
 			require_once 'Enject/Container/Injector.php';
-			$this->_defaultInjectors[$name] = new Enject_Container_Injector();
-			$this->registerInjector($name, $this->_defaultInjectors[$name]);
+			$this->_injectors[$name] = new Enject_Container_Injector();
 		}
-		return $this->_defaultInjectors[$name];
+		return $this->_injectors[$name];
 	}
 
 	/**
@@ -158,14 +151,7 @@ class Enject_Container_Base
 		$class = new ReflectionObject($target);
 		foreach($this->_getTypeList($class) as $type)
 		{
-			$type = strtolower($type);
-			if(isset($this->_injectors[$type]))
-			{
-				foreach($this->_injectors[$type] as $injector)
-				{
-					$injector->inject($this, $target);
-				}
-			}
+			$injector = $this->getInjector($type)->inject($this, $target);
 		}
 		return $this;
 	}
@@ -193,12 +179,7 @@ class Enject_Container_Base
 	 */
 	function registerInjector($typeName, $injector)
 	{
-		$typeName = strtolower($typeName);
-		if(!isset($this->_injectors[$typeName]))
-		{
-			$this->_injectors[$typeName] = new SplObjectStorage();
-		}
-		$this->_injectors[$typeName]->attach($injector, $injector);
+		$this->getInjector($typeName)->registerInjector($injector);
 		return $this;
 	}
 
