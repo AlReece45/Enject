@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library Tests
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Test_Enject
  */
@@ -91,6 +91,17 @@ class Test_Enject_Container_Injector_Test
 	}
 
 	/**
+	 * @depends testInstance
+	 */
+	function testGetInjectors()
+	{
+		$injector = $this->_createInstance();
+		$return = $injector->getInjectors();
+		$this->assertTraversable($return);
+		$this->assertEquals(0, count($return));
+	}
+
+	/**
 	 * @depends testGetInjections
 	 * @depends testAddInjection
 	 */
@@ -138,6 +149,18 @@ class Test_Enject_Container_Injector_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testRegisterInjector()
+	{
+		$this->assertClassExists('Test_Enject_Injector_Mock');
+		$mock = new Test_Enject_Injector_Mock();
+		$injector = $this->_createInstance();
+		$return = $injector->registerInjector($injector);
+		$this->assertSame($injector, $return);
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testRegisterProperty()
 	{
 		$injector = $this->_createInstance();
@@ -154,6 +177,20 @@ class Test_Enject_Container_Injector_Test
 		$injector = $this->_createInstance();
 		$target = new Test_Enject_Target_Mock();
 		$this->assertEquals($injector, $injector->inject(null, $target));
+	}
+
+	/**
+	 * @depends testRegisterInjector
+	 */
+	function testGetRegisteredInjectors()
+	{
+		$mock = new Test_Enject_Injector_Mock();
+		$injector = $this->_createInstance();
+		$injector->registerInjector($mock);
+		$return = $injector->getInjectors();
+		$this->assertTraversable($return);
+		$this->assertEquals(1, count($return));
+		$this->assertSame($mock, reset($return));;
 	}
 
 	/**
@@ -180,6 +217,20 @@ class Test_Enject_Container_Injector_Test
 	}
 
 	/**
+	 * @depends testRegisterInjector
+	 * @depends testInject
+	 */
+	function testInjectRegisteredInjectors()
+	{
+		$mock = new Test_Enject_Injector_Mock();
+		$target = new Test_Enject_Target_Mock();
+		$injector = $this->_createInstance();
+		$injector->registerInjector($mock);
+		$injector->inject(null, $target);
+		$this->assertTrue($mock->isObjectInjected($target));
+	}
+
+	/**
 	 * @depends testRegisterProperty
 	 */
 	function testGetInjectionProperties()
@@ -201,23 +252,27 @@ class Test_Enject_Container_Injector_Test
 	
 	/**
 	 * @depends testInjectionsAdded
+	 * @depends testInjectRegisteredInjectors
 	 */
-	function testInjectionsAndProperties()
+	function testInjectAll()
 	{
 		$injector = $this->_createInstance();
 
 		// set up the values to use
+		$mock = new Test_Enject_Injector_Mock();
 		$method = 'inject';
 		$parameters = array($this->_createInstance(), 'test123');
 		$property = 'test';
 		$value = 'VALUE123';
 
 		// set up the target
+		$injector->registerInjector($mock);
 		$injector->addInjection($method, $parameters);
 		$injector->registerProperty($property, $value);
 		$injector->inject(null, $this);
 
 		// perform the tests
+		$this->assertTrue($mock->isObjectInjected($this));
 		$this->assertEquals($parameters, $this->_injections[$method]);
 		$this->assertEquals($value, $this->_properties[$property]);
 	}

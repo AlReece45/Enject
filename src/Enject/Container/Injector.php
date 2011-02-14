@@ -1,16 +1,16 @@
 <?php
 /*
  * Enject Library
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
-require_once 'Enject/Injector.php';
 require_once 'Enject/Injection/Collection.php';
+require_once 'Enject/Injector.php';
 
 /**
  * Default implementation of a {@link Enject_Injector}
@@ -24,6 +24,11 @@ class Enject_Container_Injector
 	 * @var Enject_Injection_Collection_Default
 	 */
 	protected $_injectionCollection;
+
+	/**
+	 * @var splObjectStorage[Enject_Injector]
+	 */
+	protected $_injectors;
 
 	/**
 	 * Adds an injection (a method call with parameters)
@@ -53,6 +58,23 @@ class Enject_Container_Injector
 	}
 
 	/**
+	 * Adds an injector
+	 * @return Enject_Injector[]
+	 */
+	function getInjectors()
+	{
+		$return = array();
+		if($this->_injectors instanceOf splObjectStorage)
+		{
+			foreach($this->_injectors as $injector)
+			{
+				$return[] = $injector;
+			}
+		}
+		return $return;
+	}
+
+	/**
 	 * @return Enject_Injection_Collection
 	 */
 	function getInjectionCollection()
@@ -78,6 +100,27 @@ class Enject_Container_Injector
 		require_once 'Enject/Tools.php';
 		$injections = $this->getInjections();
 		$object = Enject_Tools::inject($container, $object, $injections);
+		foreach($this->getInjectors() as $injector)
+		{
+			$object = $injector->inject($container, $object);
+		}
+		return $this;
+	}
+
+	/**
+	 * @param Enject_Injector $injector
+	 * @return Enject_Injector_Container
+	 */
+	function registerInjector($injector)
+	{
+		if($injector instanceOf Enject_Injector)
+		{
+			if(!$this->_injectors instanceOf SplObjectStorage)
+			{
+				$this->_injectors = new SplObjectStorage();
+			}
+			$this->_injectors->attach($injector);
+		}
 		return $this;
 	}
 
