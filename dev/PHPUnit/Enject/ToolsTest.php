@@ -228,29 +228,6 @@ class Test_Enject_ToolsTest
 			}
 		}
 	}
-
-	/**
-	 * @depends testInject
-	 */
-	function testGetTypesValue()
-	{
-		$this->assertClassExists('Test_Enject_Value_Mock');
-		$value = new Test_Enject_Value_Mock();
-		$value->setValue($this);
-		$types = Enject_Tools::getTypes($value);
-		$expected = array(
-			 'Countable' => 'Countable',
-			 'Test_Enject_TestCase' => 'Test_Enject_TestCase',
-			 'Test_Enject_ToolsTest' => 'Test_Enject_ToolsTest',
-		);
-		foreach($types as $type)
-		{
-			if(strncmp('PHPUnit_', $type, 8) != 0)
-			{
-				$this->assertTrue(isset($expected[$type]), $type);
-			}
-		}
-	}
 	
 	/**
 	 * Returns an array of all the types that apply to an object (classes and

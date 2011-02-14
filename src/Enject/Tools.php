@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
@@ -123,50 +123,39 @@ class Enject_Tools
 	/**
 	 * Returns an array of all the types that apply to an object (classes and
 	 * interfaces) in one list.
-	 * @param Mixed|String $object Object or classname to get the types of
+	 * @param Mixed|String $reflector Object or classname to get the types of
 	 * @return String[]
 	 */
-	static function getTypes($object)
+	static function getTypes($reflector)
 	{
 		$return = array();
-		// if the object is a Enject_Value, use getTypes to get its type
-		// just ensure that the array returned is an associative array
-		if($object instanceOF Enject_Value)
+		
+		// if the object isn't already a reflector, make it one
+		if(!$reflector instanceOf ReflectionClass)
 		{
-			foreach($object->getTypes() as $type)
+			if(is_string($reflector))
 			{
-				$return[$type] = $type;
+				$reflector = new ReflectionClass($reflector);
+			}
+			else
+			{
+				$reflector = new ReflectionObject($reflector);
 			}
 		}
-		else
+
+		// get the list of interfaces and add it to the return
+		foreach($reflector->getInterfaceNames() as $interface)
 		{
-			$reflector = $object;
-			// if the object isn't already a reflector, make it one
-			if(!$reflector instanceOf ReflectionClass)
-			{
-				if(is_string($reflector))
-				{
-					$reflector = new ReflectionClass($reflector);
-				}
-				else
-				{
-					$reflector = new ReflectionObject($object);
-				}
-			}
-
-			// get the list of interfaces and add it to the return
-			foreach($reflector->getInterfaceNames() as $interface)
-			{
-				$return[$interface] = $interface;
-			}
-
-			// finally, use the reflector to go up the list of parents
-			do
-			{
-				$className = $reflector->getName();
-				$return[$className] = $className;
-			} while($reflector = $reflector->getParentClass());
+			$return[$interface] = $interface;
 		}
+
+		// finally, use the reflector to go up the list of parents
+		do
+		{
+			$className = $reflector->getName();
+			$return[$className] = $className;
+		} while($reflector = $reflector->getParentClass());
+		
 		return $return;
 	}
 }
