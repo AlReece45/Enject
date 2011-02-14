@@ -256,7 +256,7 @@ class Enject_Container_Base
 	/**
 	 * @param String $type
 	 * @return $type
-	 * @throws Enject_Exception
+	 * @throws Enject_Container_TypeUnavailableException
 	 * @uses $_types
 	 */
 	function resolveType($typeName)
@@ -276,9 +276,8 @@ class Enject_Container_Base
 		}
 		else
 		{
-			require_once 'Enject/Exception.php';
-			throw new Enject_Exception('Unable to initialize an non-class'
-				. '[' . $typeName . ']');
+			require_once 'Enject/Container/TypeUnavailableException.php';
+			throw new Enject_Container_TypeUnavailableException($typeName);
 		}
 		// return the expected value
 		return $return;
