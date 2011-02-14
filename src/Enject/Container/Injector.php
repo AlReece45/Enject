@@ -9,13 +9,13 @@
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
-require_once 'Enject/Injection/Collection.php';
 require_once 'Enject/Injector.php';
+require_once 'Enject/Injection/Collection.php';
 
 /**
  * Default implementation of a {@link Enject_Injector}
  */
-class Enject_Injector_Default
+class Enject_Container_Injector
 	implements Enject_Injection_Collection,
 		Enject_Injector
 {

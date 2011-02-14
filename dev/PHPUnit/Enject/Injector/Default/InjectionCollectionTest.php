@@ -24,8 +24,8 @@ class Test_Enject_Injector_Default_InjectionCollectionTest
 	 */
 	protected function _getInjectionCollection()
 	{
-		$this->assertClassExists('Enject_Injector_Default');
-		$return = new Enject_Injector_Default();
+		$this->assertClassExists('Enject_Container_Injector');
+		$return = new Enject_Container_Injector();
 		return $return;
 	}
 }

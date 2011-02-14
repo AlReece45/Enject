@@ -41,8 +41,8 @@ class Test_Enject_Container_Base_Test
 	 */
 	function testInjectorInstance()
 	{
-		$this->assertClassExists('Enject_Injector_Default');
-		$injector = new Enject_Injector_Default();
+		$this->assertClassExists('Enject_Container_Injector');
+		$injector = new Enject_Container_Injector();
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Test_Enject_Container_Base_Test
 	 */
 	function testRegisterInjector()
 	{
-		$expected = new Enject_Injector_Default();
+		$expected = new Enject_Container_Injector();
 		$container = $this->_getInstance();
 		$return = $container->registerInjector('Test_Enject_Target_Mock', $expected);
 		$this->assertEquals($container, $return);
@@ -157,7 +157,7 @@ class Test_Enject_Container_Base_Test
 	 */
 	function testRegisterType()
 	{
-		$expected = new Enject_Injector_Default();
+		$expected = new Enject_Container_Injector();
 		$container = $this->_getInstance();
 		$return = $container->registerType('Test_Enject_Target_Mock', $expected);
 		$this->assertEquals($container, $return);

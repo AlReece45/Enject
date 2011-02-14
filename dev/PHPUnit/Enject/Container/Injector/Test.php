@@ -14,7 +14,7 @@ require_once 'Enject/TestCase.php';
 /*
  * @see Enject_Blueprint_Default
  */
-class Test_Enject_Injector_Default_Test
+class Test_Enject_Container_Injector_Test
 	extends Test_Enject_TestCase
 {
 	/**
@@ -45,11 +45,11 @@ class Test_Enject_Injector_Default_Test
 	}
 
 	/**
-	 * @return Enject_Injector_Default
+	 * @return Enject_Container_Injector
 	 */
 	function _createInstance()
 	{
-		return new Enject_Injector_Default();
+		return new Enject_Container_Injector();
 	}
 
 	/**
@@ -57,8 +57,8 @@ class Test_Enject_Injector_Default_Test
 	 */
 	function testInstance()
 	{
-		$this->assertClassExists('Enject_Injector_Default');
-		$injector = new Enject_Injector_Default();
+		$this->assertClassExists('Enject_Container_Injector');
+		$injector = new Enject_Container_Injector();
 	}
 
 	/**

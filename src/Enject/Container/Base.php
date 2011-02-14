@@ -100,15 +100,15 @@ class Enject_Container_Base
 	 * The injector is already registered using {@link registerInjector()}
 	 * @param String $name
 	 * @return Enject_Injector
-	 * @uses Enject_Injector_Default
+	 * @uses Enject_Injector_Container
 	 */
 	function getInjector($name)
 	{
 		$name = strtolower($name);
 		if(!isset($this->_defaultInjectors[$name]))
 		{
-			require_once 'Enject/Injector/Default.php';
-			$this->_defaultInjectors[$name] = new Enject_Injector_Default();
+			require_once 'Enject/Container/Injector.php';
+			$this->_defaultInjectors[$name] = new Enject_Container_Injector();
 			$this->registerInjector($name, $this->_defaultInjectors[$name]);
 		}
 		return $this->_defaultInjectors[$name];
