@@ -23,10 +23,7 @@ class Enject_Tools
 	 * @param Mixed[] $parameters
 	 * @return Mixed[]
 	 */
-	static function prepareArguments(
-		ReflectionFunctionAbstract $method,
-		$parameters
-	)
+	static function prepareArguments($method, $parameters)
 	{
 		$parameterValues = array_values($parameters);
 		// if the array is a "perfect" numerically indexed array
