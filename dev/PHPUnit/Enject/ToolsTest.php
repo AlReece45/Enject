@@ -61,6 +61,15 @@ class Test_Enject_ToolsTest
 	}
 
 	/**
+	 Ensures the mode value cclass is available for other tests
+	 */
+	function testModeValueInstance()
+	{
+		$this->assertClassExists('Test_Enject_Mode_Value_Mock');
+		$mValue = new Test_Enject_Mode_Value_Mock();
+	}
+
+	/**
 	 * @depends testClass
 	 * @depends testTargetInstance
 	 */
@@ -252,4 +261,92 @@ class Test_Enject_ToolsTest
 			}
 		}
 	}
-}	
+
+	/**
+	 * @depends testClass
+	 * @depends testValueInstance
+	 */
+	function testGetModeTypesDefaultMode()
+	{
+		$expected = array(
+			 'Test_Enject_Target_Parent' => 'Test_Enject_Target_Parent',
+			 'Test_Enject_Target' => 'Test_Enject_Target',
+			 'Test_Enject_Target_Mock' => 'Test_Enject_Target_Mock',
+			 'Test_Enject_Target_Mock_Parent' => 'Test_Enject_Target_Mock_Parent',
+		);
+		$this->assertClassExists('Test_Enject_Mode_Value_Mock');
+		$target = new Test_Enject_Target_Mock();
+		$mValue = new Test_Enject_Mode_Value_Mock();
+		$mValue->setValue($target);
+		$mValue->setMode(Test_Enject_Mode_Value_Mock::MODE_DEFAULT);
+		$return = Enject_Tools::getModeTypes($mValue, 'Test_Enject_Target_Mock');
+		$this->assertEquals($expected, $return);
+	}
+
+	/**
+	 * @depends testClass
+	 * @depends testTargetInstance
+	 */
+	function testGetModeTypesResolveMode()
+	{
+		$expected = array(
+			 'Test_Enject_Target_Parent' => 'Test_Enject_Target_Parent',
+			 'Test_Enject_Target' => 'Test_Enject_Target',
+			 'Test_Enject_Target_Mock' => 'Test_Enject_Target_Mock',
+			 'Test_Enject_Target_Mock_Parent' => 'Test_Enject_Target_Mock_Parent',
+		);
+		$this->assertClassExists('Test_Enject_Mode_Value_Mock');
+		$target = new Test_Enject_Target_Mock();
+		$mValue = new Test_Enject_Mode_Value_Mock();
+		$mValue->setValue($target);
+		$mValue->setMode(Test_Enject_Mode_Value_Mock::MODE_RESOLVE);
+		$return = Enject_Tools::getModeTypes($mValue, 'Test_Enject_Target_Mock');
+		$this->assertEquals($expected, $return);
+	}
+
+	/**
+	 * @depends testClass
+	 * @depends testValueInstance
+	 */
+	function testGetValueModeTypesDefaultMode()
+	{
+		$expected = array(
+			 'Enject_Value' => 'Enject_Value',
+			 'Enject_Mode_Value' => 'Enject_Mode_Value',
+			 'Test_Enject_Mode_Value_Mock' => 'Test_Enject_Mode_Value_Mock',
+			 'Test_Enject_Value_Mock' => 'Test_Enject_Value_Mock',
+		);
+		$this->assertClassExists('Test_Enject_Mode_Value_Mock');
+		$target = new Test_Enject_Target_Mock();
+		$value = new Test_Enject_Value_Mock();
+		$value->setValue($target);
+		$mValue = new Test_Enject_Mode_Value_Mock();
+		$mValue->setValue($value);
+		$mValue->setMode(Test_Enject_Mode_Value_Mock::MODE_DEFAULT);
+		$return = Enject_Tools::getModeTypes($mValue, 'Test_Enject_Mode_Value_Mock');
+		$this->assertEquals($expected, $return);
+	}
+
+	/**
+	 * @depends testClass
+	 * @depends testTargetInstance
+	 */
+	function testGetValueModeTypesResolveMode()
+	{
+		$expected = array(
+			 'Test_Enject_Target_Parent' => 'Test_Enject_Target_Parent',
+			 'Test_Enject_Target' => 'Test_Enject_Target',
+			 'Test_Enject_Target_Mock' => 'Test_Enject_Target_Mock',
+			 'Test_Enject_Target_Mock_Parent' => 'Test_Enject_Target_Mock_Parent',
+		);
+		$this->assertClassExists('Test_Enject_Mode_Value_Mock');
+		$target = new Test_Enject_Target_Mock();
+		$value = new Test_Enject_Value_Mock();
+		$value->setValue($target);
+		$mValue = new Test_Enject_Mode_Value_Mock();
+		$mValue->setValue($value);
+		$mValue->setMode(Test_Enject_Mode_Value_Mock::MODE_RESOLVE);
+		$return = Enject_Tools::getModeTypes($mValue, 'Test_Enject_Mode_Value_Mock');
+		$this->assertEquals($expected, $return);
+	}
+}

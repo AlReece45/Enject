@@ -117,6 +117,39 @@ class Enject_Tools
 	}
 
 	/**
+	 * Returns an array of all the types that apply to an Enject_Value_Mode
+	 * @param Enject_Value_Mode $value
+	 * @param ReflectionClass|String $reflector
+	 * @return String[]
+	 */
+	static function getModeTypes($value, $reflector)
+	{
+		require_once 'Enject/Mode/Value.php';
+		$useStandardTypes = true;
+		if($value->getMode() == Enject_Mode_Value::MODE_RESOLVE)
+		{
+			$modeValue = $value->getValue();
+			if($modeValue instanceOf Enject_Value)
+			{
+				$return = array();
+				$useStandardTypes = false;
+				foreach($modeValue->getTypes() as $type)
+				{
+					$return[$type] = $type;
+				}
+			}
+		}
+
+		if($useStandardTypes)
+		{
+			require_once 'Enject/Tools.php';
+			$return = self::getTypes($reflector);
+		}
+
+		return $return;
+	}
+
+	/**
 	 * Returns an array of all the types that apply to an object (classes and
 	 * interfaces) in one list.
 	 * @param Mixed|String $reflector Object or classname to get the types of
