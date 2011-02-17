@@ -25,7 +25,7 @@ class Enject_Scope_Default
 	/**
 	 * @var splObjectStorage
 	 */
-	protected $_values;
+	protected $_listeners;
 
 	/**
 	 * When the scope is no longer accessible, inform all the
@@ -33,11 +33,11 @@ class Enject_Scope_Default
 	 */
 	function  __destruct()
 	{
-		foreach($this->getValues() as $value)
+		foreach($this->getListeners() as $listener)
 		{
-			if($value instanceOf Enject_Scope_Value)
+			if($listener instanceOf Enject_Scope_Listener)
 			{
-				$value->removeScope($this);
+				$listener->removeScope($this);
 			}
 		}
 	}
@@ -50,11 +50,11 @@ class Enject_Scope_Default
 	{
 		$oldScopeId = $this->getScopeId();
 		$this->_scopeId = null;
-		foreach($this->getValues() as $value)
+		foreach($this->getListeners() as $listener)
 		{
-			if($value instanceOf Enject_Scope_Value)
+			if($listener instanceOf Enject_Scope_Listener)
 			{
-				$value->cloneScope($this, $oldScopeId);
+				$listener->cloneScope($this, $oldScopeId);
 			}
 		}
 	}
@@ -65,7 +65,7 @@ class Enject_Scope_Default
 	function __sleep()
 	{
 		$return = get_object_vars($this);
-		unset($return['_values']);
+		unset($return['_listeners']);
 		return array_keys($return);
 	}
 
@@ -88,23 +88,23 @@ class Enject_Scope_Default
 	 * Only values that use scope register themselves
 	 * @return SplObjectStorage
 	 */
-	function getValues()
+	function getListeners()
 	{
-		if(!$this->_values instanceOf SplObjectStorage)
+		if(!$this->_listeners instanceOf SplObjectStorage)
 		{
-			$this->_values = new SplObjectStorage();
+			$this->_listeners = new SplObjectStorage();
 		}
-		return $this->_values;
+		return $this->_listeners;
 	}
 
 	/**
 	 * @return Enject_Scope_Default
 	 */
-	function registerValue($value)
+	function registerListener($listener)
 	{
-		if($value instanceOf Enject_Scope_Value)
+		if($listener instanceOf Enject_Scope_Listener)
 		{
-			$this->getValues()->attach($value);
+			$this->getListeners()->attach($listener);
 		}
 		return $this;
 	}

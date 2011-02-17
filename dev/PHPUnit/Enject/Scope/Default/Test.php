@@ -38,10 +38,10 @@ class Test_Enject_Scope_Default_Test
 	 * Ensure that a test instance of {@link Test_Enject_Scope_Value} may be
 	 * created.
 	 */
-	function testValueInstance()
+	function testListenerInstance()
 	{
-		$this->assertClassExists('Test_Enject_Scope_Value_Mock');
-		$value = new Test_Enject_Scope_Value_Mock();
+		$this->assertClassExists('Test_Enject_Scope_Listener_Mock');
+		$value = new Test_Enject_Scope_Listener_Mock();
 	}
 
 	/**
@@ -56,40 +56,40 @@ class Test_Enject_Scope_Default_Test
 	
 	/**
 	 * @depends testInstance
-	 * @depends testValueInstance
+	 * @depends testListenerInstance
 	 */
-	function testRegisterValue()
+	function testRegisterListener()
 	{
 		$scope = $this->_getInstance();
-		$value = new Test_Enject_Scope_Value_Mock();
-		$this->assertSame($scope, $scope->registerValue($value));
+		$value = new Test_Enject_Scope_Listener_Mock();
+		$this->assertSame($scope, $scope->registerListener($value));
 	}
 
 	/**
-	 * @depends testRegisterValue
+	 * @depends testRegisterListener
 	 */
 	function testClone()
 	{
-		$value = new Test_Enject_Scope_Value_Mock();
+		$listener = new Test_Enject_Scope_Listener_Mock();
 		$scope = $this->_getInstance();
-		$scope->registerValue($value);
+		$scope->registerListener($listener);
 		$clone = clone $scope;
-		$scopes = $value->getClonedScopes();
+		$scopes = $listener->getClonedScopes();
 		$this->assertTraversable($scopes);
 		$this->assertNotEquals($scope->getScopeId(), $clone->getScopeId());
 		$this->assertSame($clone, reset($scopes));
 	}
 
 	/**
-	 * @depends testRegisterValue
+	 * @depends testRegisterListener
 	 * {@link Enject_Scope_Default::getScopeId()} changes after waking up.
 	 */
-	function testGetValues()
+	function testGetListeners()
 	{
 		$scope = $this->_getInstance();
-		$value = new Test_Enject_Scope_Value_Mock();
-		$scope->registerValue($value);
-		$return = $scope->getValues();
+		$value = new Test_Enject_Scope_Listener_Mock();
+		$scope->registerListener($value);
+		$return = $scope->getListeners();
 		$this->assertTraversable($return);
 		$this->assertType('splObjectStorage', $return);
 		$this->assertEquals(1, count($return));
@@ -97,27 +97,26 @@ class Test_Enject_Scope_Default_Test
 	}
 
 	/**
-	 * @depends testGetValues
+	 * @depends testGetListeners
 	 * {@link Enject_Scope_Default::getScopeId()} changes after waking up.
 	 */
 	function testSleep()
 	{
 		$scope = $this->_getInstance();
-		$value = new Test_Enject_Scope_Value_Mock();
-		$scope->registerValue($value);
+		$value = new Test_Enject_Scope_Listener_Mock();
+		$scope->registerListener($value);
 		$clone = unserialize(serialize($scope));
-		$this->assertEquals(0, count($clone->getValues()));
+		$this->assertEquals(0, count($clone->getListeners()));
 	}
 
 	/**
-	 * @depends testInstance
-	 * @depends testRegisterValue
+	 * @depends testRegisterListener
 	 */
 	function testDestroyRemove()
 	{
 		$scope = $this->_getInstance();
-		$value = new Test_Enject_Scope_Value_Mock();
-		$this->assertSame($scope, $scope->registerValue($value));
+		$value = new Test_Enject_Scope_Listener_Mock();
+		$this->assertSame($scope, $scope->registerListener($value));
 		$expected = $scope->getScopeId();
 		unset($scope);
 		$return = $value->getRemovedScopes();

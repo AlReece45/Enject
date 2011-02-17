@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <AlReece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Test_Enject
  */
@@ -25,36 +25,36 @@ class Test_Enject_Scope_Mock
 	/**
 	 * @var splObjectStorage
 	 */
-	protected $_values;
+	protected $_listeners;
 
 	/**
 	 * When the scope is no longer accessible, inform all the
-	 * {@link Enject_Scope_Value}s to remove this scope from their storage.
+	 * {@link Enject_Scope_Listener}s to remove this scope from their storage.
 	 */
 	function  __destruct()
 	{
-		foreach($this->getValues() as $value)
+		foreach($this->getListeners() as $listener)
 		{
-			if($value instanceOf Enject_Scope_Value)
+			if($listener instanceOf Enject_Scope_Listener)
 			{
-				$value->removeScope($this);
+				$listener->removeScope($this);
 			}
 		}
 	}
 
 	/**
-	 * When a scope is cloned, inform all registered {@link Enject_Scope_Value}s
+	 * When a scope is cloned, inform all registered {@link Enject_Scope_Listener}s
 	 * to clone their stored objects for this scope.
 	 */
 	function __clone()
 	{
 		$oldScopeId = $this->getScopeId();
 		$this->_scopeId = null;
-		foreach($this->getValues() as $value)
+		foreach($this->getListeners() as $listener)
 		{
-			if($value instanceOf Enject_Scope_Value)
+			if($listener instanceOf Enject_Scope_Listener)
 			{
-				$value->cloneScope($this, $oldScopeId);
+				$listener->cloneScope($this, $oldScopeId);
 			}
 		}
 	}
@@ -65,7 +65,7 @@ class Test_Enject_Scope_Mock
 	function __sleep()
 	{
 		$return = get_object_vars($this);
-		unset($return['_values']);
+		unset($return['_listeners']);
 		return array_keys($return);
 	}
 
@@ -83,28 +83,28 @@ class Test_Enject_Scope_Mock
 	}
 
 	/**
-	 * Returns all registered values.
+	 * Returns all registered Listeners.
 	 *
-	 * Only values that use scope register themselves
+	 * Only Listeners that use scope register themselves
 	 * @return SplObjectStorage
 	 */
-	function getValues()
+	function getListeners()
 	{
-		if(!$this->_values instanceOf SplObjectStorage)
+		if(!$this->_listeners instanceOf SplObjectStorage)
 		{
-			$this->_values = new SplObjectStorage();
+			$this->_listeners = new SplObjectStorage();
 		}
-		return $this->_values;
+		return $this->_listeners;
 	}
 
 	/**
 	 * @return Enject_Scope_Default
 	 */
-	function registerValue($value)
+	function registerListener($listener)
 	{
-		if($value instanceOf Enject_Scope_Value)
+		if($listener instanceOf Enject_Scope_Listener)
 		{
-			$this->getValues()->attach($value);
+			$this->getListeners()->attach($listener);
 		}
 		return $this;
 	}

@@ -16,7 +16,7 @@
  * the methods in this interface are called.
  * @see Enject_Scope
  */
-interface Enject_Scope_Value
+interface Enject_Scope_Listener
 {
 	/**
 	 * When a scope is cloned, this method will be called. It is expected that

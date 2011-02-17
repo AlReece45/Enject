@@ -10,7 +10,7 @@
  * @package Enject
  */
 require_once 'Enject/Injection/Collection.php';
-require_once 'Enject/Scope/Value.php';
+require_once 'Enject/Scope/Listener.php';
 require_once 'Enject/Value/Base.php';
 require_once 'Enject/Value.php';
 
@@ -21,7 +21,7 @@ require_once 'Enject/Value.php';
 class Enject_Value_Builder
 	extends Enject_Value_Base
 	implements Enject_Injection_Collection,
-		Enject_Scope_Value,
+		Enject_Scope_Listener,
 		Enject_Value
 {
 	/**
@@ -279,7 +279,7 @@ class Enject_Value_Builder
 			$container->inject($return);
 			if($scope instanceOf Enject_Scope)
 			{
-				$scope->registerValue($this);
+				$scope->registerListener($this);
 				$this->_instances[$scopeId] = $return;
 			}
 		}
