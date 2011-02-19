@@ -151,7 +151,7 @@ class Enject_Container_Base
 		$class = new ReflectionObject($target);
 		foreach($this->_getTypeList($class) as $type)
 		{
-			$injector = $this->getInjector($type)->inject($this, $target);
+			$this->getInjector($type)->inject($this, $target);
 		}
 		return $this;
 	}
