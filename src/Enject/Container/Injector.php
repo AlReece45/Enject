@@ -102,7 +102,7 @@ class Enject_Container_Injector
 		$object = Enject_Tools::inject($container, $object, $injections);
 		foreach($this->getInjectors() as $injector)
 		{
-			$object = $injector->inject($container, $object);
+			$injector->inject($container, $object);
 		}
 		return $this;
 	}
