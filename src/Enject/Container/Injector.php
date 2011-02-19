@@ -99,7 +99,7 @@ class Enject_Container_Injector
 	{
 		require_once 'Enject/Tools.php';
 		$injections = $this->getInjections();
-		$object = Enject_Tools::inject($container, $object, $injections);
+		Enject_Tools::inject($container, $object, $injections);
 		foreach($this->getInjectors() as $injector)
 		{
 			$injector->inject($container, $object);
