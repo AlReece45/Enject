@@ -14,7 +14,6 @@
  * Responsible for storing and returning objects in for specified values.
  * Often implemented with a SplObjectStorage
  * @see Enject_Scope_Default
- * @see Enject_Scope_Prototype
  */
 interface Enject_Scope
 {
