@@ -156,7 +156,7 @@ class Enject_Container_Base
 	 */
 	function inject($target)
 	{
-		$class = new ReflectionClass($target);
+		$class = new ReflectionObject($target);
 		foreach($this->_getTypeList($class) as $type)
 		{
 			$type = strtolower($type);
