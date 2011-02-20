@@ -42,13 +42,14 @@ abstract class Enject_Value_Base
 
 	/**
 	 * @return Enject_Container_Base
+	 * @throws Enject_Container_Value_ContainerUndefinedException
 	 */
 	function getContainer()
 	{
 		if(!$this->_container instanceOf Enject_Container_Base)
 		{
-			require_once 'Enject/Exception.php';
-			throw new Enject_Exception('Container not set');
+			require_once 'Enject/Container/Value/ContainerUndefinedException.php';
+			throw new Enject_Container_Value_ContainerUndefinedException();
 		}
 		return $this->_container;
 	}

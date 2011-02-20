@@ -45,7 +45,7 @@ class Test_Enject_Value_BaseTest
 
 	/**
 	 * @depends testInstance
-	 * @expectedException Enject_Exception
+	 * @expectedException Enject_Container_Value_ContainerUndefinedException
 	 */
 	function testGetContainerException()
 	{
