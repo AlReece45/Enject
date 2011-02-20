@@ -286,7 +286,7 @@ class Test_Enject_Container_Base_Test
 		$target = new Test_Enject_Target_Mock();
 		$container->inject($target);
 		$properties = $target->getProperties();
-		$this->assertEquals(0, count($target->getInjections()));
+		$this->assertEquals(1, count($target->getInjections()));
 		$this->assertEquals(1, count($properties));
 		$this->assertEquals($properties['test'], 'realValue');
 		$this->assertEquals(2, $target->countSetProperties());
@@ -308,7 +308,7 @@ class Test_Enject_Container_Base_Test
 		$target = new Test_Enject_Target_Mock();
 		$container->inject($target);
 		$properties = $target->getProperties();
-		$this->assertEquals(0, count($target->getInjections()));
+		$this->assertEquals(1, count($target->getInjections()));
 		$this->assertEquals(1, count($properties));
 		$this->assertEquals($properties['test'], 'realValue');
 		$this->assertEquals(2, $target->countSetProperties());
@@ -328,7 +328,7 @@ class Test_Enject_Container_Base_Test
 		$container->inject($target);
 		$properties = $target->getProperties();
 
-		$this->assertEquals(0, count($target->getInjections()));
+		$this->assertEquals(1, count($target->getInjections()));
 		$this->assertEquals(1, count($properties));
 		$this->assertEquals(1, $target->countSetProperties());
 		$this->assertEquals('testValue123', $properties['test']);
@@ -339,7 +339,7 @@ class Test_Enject_Container_Base_Test
 		$container->inject($target);
 		$properties = $target->getProperties();
 
-		$this->assertEquals(0, count($target->getInjections()));
+		$this->assertEquals(1, count($target->getInjections()));
 		$this->assertEquals(1, count($properties));
 		$this->assertEquals(2, $target->countSetProperties());
 		$this->assertEquals('testValue456', $properties['test']);
@@ -350,7 +350,7 @@ class Test_Enject_Container_Base_Test
 		$container->inject($target);
 		$properties = $target->getProperties();
 
-		$this->assertEquals(0, count($target->getInjections()));
+		$this->assertEquals(1, count($target->getInjections()));
 		$this->assertEquals(1, count($properties));
 		$this->assertEquals(3, $target->countSetProperties());
 		$this->assertEquals('testValue789', $properties['test']);
@@ -361,7 +361,7 @@ class Test_Enject_Container_Base_Test
 		$container->inject($target);
 		$properties = $target->getProperties();
 
-		$this->assertEquals(0, count($target->getInjections()));
+		$this->assertEquals(1, count($target->getInjections()));
 		$this->assertEquals(1, count($properties));
 		$this->assertEquals(4, $target->countSetProperties());
 		$this->assertEquals('testValueABCDEFG', $properties['test']);

@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library Tests
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Test_Enject
  */
@@ -68,10 +68,7 @@ class Test_Enject_Target_Mock
 			$this->_setProperties++;
 			$this->_properties[substr($method, 3)] = reset($parameters);
 		}
-		else
-		{
-			$this->_injections[$method] = $parameters;
-		}
+		$this->_injections[$method] = $parameters;
 	}
 
 	/**
@@ -98,6 +95,52 @@ class Test_Enject_Target_Mock
 	function getProperties()
 	{
 		return $this->_properties;
+	}
+
+	/**
+	 * @param String $property
+	 * @return String
+	 */
+	function getProperty($property)
+	{
+		$return = null;
+		if(isset($this->_properties[$property]))
+		{
+			$return = $this->_properties[$property];
+		}
+		return $return;
+	}
+
+	/**
+	 * @param String $function
+	 * @return Boolean
+	 */
+	function isInjected($method)
+	{
+		return isset($this->_injections[$method]);
+	}
+
+	/**
+	 * @param String $property
+	 * @return Boolean
+	 */
+	function isProperty($property)
+	{
+		return isset($this->_properties[$property]);
+	}
+
+	/**
+	 * @param String $method
+	 * @return Mixed[]
+	 */
+	function getParameters($method)
+	{
+		$return = array();
+		if(isset($this->_injections[$method]))
+		{
+			$return = $this->_injections[$method];
+		}
+		return $return;
 	}
 
 	/**#@+
