@@ -18,33 +18,6 @@ class Test_Enject_Container_Injector_Test
 	extends Test_Enject_TestCase
 {
 	/**
-	 * Test property uesd for testing
-	 */
-	protected $_injections = array();
-
-	/**
-	 * @var Mixed[]
-	 */
-	protected $_properties = array();
-
-	/**
-	 * Intercept calls so we can make sure the functionality works correctly.
-	 */
-	function __call($name, $arguments)
-	{
-		if(strncmp('set', $name, 3) == 0)
-		{
-			$this->assertEquals(1, count($arguments));
-			$property = substr($name, 3);
-			$this->_properties[$property] = reset($arguments);
-		}
-		else
-		{
-			$this->_injections[$name] = $arguments;
-		}
-	}
-
-	/**
 	 * @return Enject_Container_Injector
 	 */
 	function _createInstance()
@@ -236,6 +209,7 @@ class Test_Enject_Container_Injector_Test
 	function testGetInjectionProperties()
 	{
 		$injector = $this->_createInstance();
+		$target = new Test_Enject_Target_Mock();
 
 		// setup the values to use
 		$property = 'test';
@@ -244,36 +218,48 @@ class Test_Enject_Container_Injector_Test
 		// set up the target
 		unset($this->_properties[$property]);
 		$injector->registerProperty($property, $value);
-		$injector->inject(null, $this);
+		$injector->inject(null, $target);
 
-		// the assertion(s)
-		$this->assertEquals($value, $this->_properties[$property]);
+		$this->assertTrue($target->isProperty($property));
+		$this->assertEquals($value, $target->getProperty($property));
 	}
 	
 	/**
+	 * @depends testInjectRegisteredInjectors
 	 * @depends testInjectionsAdded
 	 * @depends testInjectRegisteredInjectors
 	 */
 	function testInjectAll()
 	{
 		$injector = $this->_createInstance();
+		$target = new Test_Enject_Target_Mock();
 
-		// set up the values to use
+		// set up mock injector
 		$mock = new Test_Enject_Injector_Mock();
-		$method = 'inject';
-		$parameters = array($this->_createInstance(), 'test123');
+		$injector->registerInjector($mock);
+
+		// set up mock property
 		$property = 'test';
 		$value = 'VALUE123';
-
-		// set up the target
-		$injector->registerInjector($mock);
-		$injector->addInjection($method, $parameters);
 		$injector->registerProperty($property, $value);
-		$injector->inject(null, $this);
 
-		// perform the tests
-		$this->assertTrue($mock->isObjectInjected($this));
-		$this->assertEquals($parameters, $this->_injections[$method]);
-		$this->assertEquals($value, $this->_properties[$property]);
+		// set up mock method
+		$method = 'inject';
+		$parameters = array($target, 'test123');
+		$injector->addInjection($method, $parameters);
+
+		// inject
+		$injector->inject(null, $target);
+
+		// check the injector
+		$this->assertTrue($mock->isObjectInjected($target));
+
+		// check the property
+		$this->assertTrue($target->isProperty($property));
+		$this->assertEquals($value, $target->getProperty($property));
+		
+		// check the method
+		$this->assertTrue($target->isInjected($method));
+		$this->assertEquals($parameters, $target->getParameters($method));
 	}
 }
