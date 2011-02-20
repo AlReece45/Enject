@@ -96,10 +96,10 @@ class Enject_Injection_Collection_Default
 	 */
 	static function getSetterInjection($property, $value)
 	{
-			require_once 'Enject/Injection/Default.php';
-			$return = new Enject_Injection_Default();
-			$return->setMethod("set$property");
-			$return->setParameters(array($value));
-			return $return;
+		require_once 'Enject/Injection/Default.php';
+		$return = new Enject_Injection_Default();
+		$return->setMethod("set$property");
+		$return->setParameters(array($value));
+		return $return;
 	}
 }
