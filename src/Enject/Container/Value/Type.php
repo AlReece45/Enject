@@ -71,7 +71,7 @@ class Enject_Container_Value_Type
 
 	/**
 	 * Gets the types (parent classes and interfaces) associated with the
-	 * requested ty-e.
+	 * requested type.
 	 * @return String[]
 	 * @uses Enject_Tools::getModeTypes()
 	 */
