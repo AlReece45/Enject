@@ -188,11 +188,9 @@ class Enject_Container_Base
 
 	/**
 	 * Registers an injector for a target type
-	 * @param $className
+	 * @param $typeName
 	 * @param Enject_Injector $injector
 	 * @return Enject_Container_Base
-	 * @see getInjector()
-	 * @see resolveInjector()x
 	 */
 	function registerInjector($typeName, $injector)
 	{
