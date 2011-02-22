@@ -28,9 +28,4 @@ interface Enject_Value
 	 * @return Mixed
 	 */
 	function resolve();
-
-	/**
-	 * @return Enject_Container_Base
-	 */
-	function getContainer();
 }
