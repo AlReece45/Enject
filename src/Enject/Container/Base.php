@@ -108,21 +108,6 @@ class Enject_Container_Base
 	}
 
 	/**
-	 * @param String $name
-	 * @return Mixed
-	 * @throws Enject_Exception
-	 * @uses $_components
-	 */
-	function getType($type)
-	{
-		require_once 'Enject/Container/Value/Type.php';
-		$return = new Enject_Container_Value_Type();
-		$return->setContainer($this);
-		$return->setType($type);
-		return $return;
-	}
-
-	/**
 	 * @param String $scope
 	 * @return Enject_Scope
 	 * @throws Enject_Exception
@@ -135,6 +120,21 @@ class Enject_Container_Base
 			throw new Enject_Container_ScopeUnavailableException($scope);
 		}
 		return $this->_scopes[$scope];
+	}
+
+	/**
+	 * @param String $name
+	 * @return Mixed
+	 * @throws Enject_Exception
+	 * @uses $_components
+	 */
+	function getType($type)
+	{
+		require_once 'Enject/Container/Value/Type.php';
+		$return = new Enject_Container_Value_Type();
+		$return->setContainer($this);
+		$return->setType($type);
+		return $return;
 	}
 
 	/**

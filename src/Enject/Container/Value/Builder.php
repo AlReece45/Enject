@@ -20,8 +20,7 @@ require_once 'Enject/Scope/Value.php';
  */
 class Enject_Container_Value_Builder
 	extends Enject_Container_Value_Base
-	implements Enject_Injection_Collection,
-		Enject_Mode_Value,
+	implements Enject_Mode_Value,
 		Enject_Scope_Value
 {
 	/**
