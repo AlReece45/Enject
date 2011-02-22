@@ -187,7 +187,7 @@ class Test_Enject_Container_Base_Test
 	{
 		$container = $this->_getInstance();
 		$builder = $container->getBuilder('Test_Enject_Target_Mock');
-		$this->assertType('Enject_Value_Builder', $builder);
+		$this->assertType('Enject_Container_Value_Builder', $builder);
 		$this->assertSame('Test_Enject_Target_Mock', $builder->getClassname());
 		$this->assertSame($container, $builder->getContainer());
 	}

@@ -14,15 +14,15 @@ require_once 'Enject/TestCase.php';
 /*
  * @see Enject_Blueprint_Default
  */
-class Test_Enject_Value_Builder_Test
+class Test_Enject_Container_Value_Builder_Test
 	extends Test_Enject_TestCase
 {
 	/**
-	 * @return Enject_Value_Builder 
+	 * @return Enject_Container_Value_Builder 
 	 */
 	protected function _getInstance()
 	{
-		return new Enject_Value_Builder();
+		return new Enject_Container_Value_Builder();
 	}
 
 	/**
@@ -30,8 +30,8 @@ class Test_Enject_Value_Builder_Test
 	 */
 	function testInstance()
 	{
-		$this->assertClassExists('Enject_Value_Builder');
-		$builder = new Enject_Value_Builder();
+		$this->assertClassExists('Enject_Container_Value_Builder');
+		$builder = new Enject_Container_Value_Builder();
 	}
 
 	/**
@@ -367,12 +367,12 @@ class Test_Enject_Value_Builder_Test
 	 */
 	function testResolveDefaultMode()
 	{
-		$value = new Test_Enject_Target_Mock();
+		$target = new Test_Enject_Target_Mock();
 		$builder = $this->_getInstance();
 		$builder->setContainer(new Enject_Container_Default());
 		$builder->setClassname('Test_Enject_Value_Mock');
-		$builder->registerProperty('value', $value);
-		$this->assertSame($value, $builder->resolve());
+		$builder->registerProperty('value', $target);
+		$this->assertSame($target, $builder->resolve());
 	}
 
 	/**

@@ -17,7 +17,7 @@ require_once 'Enject/Scope/Listener.php';
  * This {@link Enject_Value} is responsible for creating AND injecting and
  * object when it is resolved.
  */
-class Enject_Value_Builder
+class Enject_Container_Value_Builder
 	extends Enject_Container_Value_Base
 	implements Enject_Injection_Collection,
 		Enject_Scope_Listener

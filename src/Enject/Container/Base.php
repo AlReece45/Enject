@@ -63,8 +63,8 @@ class Enject_Container_Base
 	 */
 	function getBuilder($className)
 	{
-		require_once 'Enject/Value/Builder.php';
-		$return = new Enject_Value_Builder();
+		require_once 'Enject/Container/Value/Builder.php';
+		$return = new Enject_Container_Value_Builder();
 		$return->setContainer($this);
 		$return->setClassname($className);
 		return $return;
