@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library Tests
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Test_Enject
  */
@@ -38,6 +38,15 @@ class Test_Enject_Container_Value_Component_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testGetDefaultMode()
+	{
+		$builder = $this->_getInstance();
+		$this->assertEquals('resolve', $builder->getMode());
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testSetContainer()
 	{
 		$this->assertClassExists('Enject_Container_Base');
@@ -49,10 +58,29 @@ class Test_Enject_Container_Value_Component_Test
 	/**
 	 * @depends testInstance
 	 */
+	function testSetMode()
+	{
+		$builder = $this->_getInstance();
+		$this->assertSame($builder, $builder->setMode('test'));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
 	function testSetName()
 	{
 		$builder = $this->_getInstance();
 		$this->assertSame($builder, $builder->setName('testName'));
+	}
+
+	/**
+	 * @depends testSetMode
+	 */
+	function testGetSetMode()
+	{
+		$builder = $this->_getInstance();
+		$builder->setMode('test/mode');
+		$this->assertEquals('test/mode', $builder->getMode());
 	}
 
 	/**
@@ -123,6 +151,46 @@ class Test_Enject_Container_Value_Component_Test
 		$value = $this->_getInstance();
 		$value->setContainer($container);
 		$value->setName('tests.value.mock');
+		$this->assertSame($target, $value->resolve());
+	}
+
+	/**
+	 * @depends testSetMode
+	 * @depends testSetName
+	 * @depends testSetContainer
+	 */
+	function testResolveValueDefaultMode()
+	{
+		$this->assertClassExists('Test_Enject_Value_Mock');
+		$container = new Enject_Container_Base();
+		$target = new Test_Enject_Target_Mock();
+		$component = new Test_Enject_Value_Mock();
+		$component->setValue($target);
+		$container->registerComponent('tests.value.mock', $component);
+		$value = $this->_getInstance();
+		$value->setContainer($container);
+		$value->setName('tests.value.mock');
+		$value->setMode('default');
+		$this->assertSame($component, $value->resolve());
+	}
+
+	/**
+	 * @depends testSetMode
+	 * @depends testSetName
+	 * @depends testSetContainer
+	 */
+	function testResolveValueResolveMode()
+	{
+		$this->assertClassExists('Test_Enject_Value_Mock');
+		$container = new Enject_Container_Base();
+		$target = new Test_Enject_Target_Mock();
+		$component = new Test_Enject_Value_Mock();
+		$component->setValue($target);
+		$container->registerComponent('tests.value.mock', $component);
+		$value = $this->_getInstance();
+		$value->setContainer($container);
+		$value->setName('tests.value.mock');
+		$value->setMode('resolve');
 		$this->assertSame($target, $value->resolve());
 	}
 }

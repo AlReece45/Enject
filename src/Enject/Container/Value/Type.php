@@ -10,6 +10,7 @@
  * @package Enject
  */
 require_once 'Enject/Container/Value/Base.php';
+require_once 'Enject/Mode/Value.php';
 
 /**
  * This {@link Enject_Value} is responsible for resolving a value to a type.
@@ -17,13 +18,46 @@ require_once 'Enject/Container/Value/Base.php';
  */
 class Enject_Container_Value_Type
 	extends Enject_Container_Value_Base
+	implements Enject_Mode_Value
 {
+	/**
+	 * The name of the type that will be resolved
+	 * @var String
+	 */
+	protected $_mode;
 
 	/**
 	 * The name of the type that will be resolved
 	 * @var String
 	 */
 	protected $_type;
+
+	/**
+	 * @return String
+	 */
+	function getMode()
+	{
+		$return = $this->_mode;
+		if(!$return)
+		{
+			$return = self::MODE_RESOLVE;
+			try
+			{
+				$class = new ReflectionClass($this->getType());
+				if($class->implementsInterface('Enject_Value'))
+				{
+					$return = self::MODE_DEFAULT;
+				}
+			}
+			catch(ReflectionException $exception)
+			{
+				// unfortunately, this will probably cause
+				// an error when trying to resolve the type later
+				// for now, use the default mode
+			}
+		}
+		return $return;
+	}
 
 	/**
 	 * Gets the name of the type that will be resolved.
@@ -39,13 +73,22 @@ class Enject_Container_Value_Type
 	 * Gets the types (parent classes and interfaces) associated with the
 	 * requested ty-e.
 	 * @return String[]
-	 * @uses Enject_Tools::getTypes()
+	 * @uses Enject_Tools::getModeTypes()
 	 */
 	function getTypes()
 	{
 		require_once 'Enject/Tools.php';
-		$class = new ReflectionClass($this->getType());
-		return Enject_Tools::getTypes($class);
+		return Enject_Tools::getModeTypes($this, $this->getType());
+	}
+
+	/**
+	 * @return Mixed[]
+	 * @see getType()
+	 * @see Enject_Container_Base::resolveType()
+	 */
+	function getValue()
+	{
+		return $this->getContainer()->resolveType($this->getType());
 	}
 
 	/**
@@ -56,8 +99,21 @@ class Enject_Container_Value_Type
 	 */
 	function resolve()
 	{
-		$container = $this->getContainer();
-		return $this->_resolve($container->resolveType($this->getType()));
+		// use the mode to resolve if needed
+		$modeResolver = $this->_getModeResolver();
+		$modeResolver->setMode($this->getMode());
+		$modeResolver->setValue($this->getValue());
+		return $modeResolver->resolve();
+	}
+
+	/**
+	 * @param String $mode
+	 * @return Enject_Container_Value_Type
+	 */
+	function setMode($mode)
+	{
+		$this->_mode = $mode;
+		return $this;
 	}
 
 	/**

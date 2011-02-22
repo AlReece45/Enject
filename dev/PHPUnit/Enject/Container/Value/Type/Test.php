@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library Tests
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Test_Enject
  */
@@ -35,6 +35,24 @@ class Test_Enject_Container_Value_Type_Test
 	}
 
 	/**
+	 * Ensures the class exists and can be created
+	 */
+	function testTargetInstance()
+	{
+		$this->assertClassExists('Test_Enject_Target_Mock');
+		$builder = new Enject_Container_Value_Type();
+	}
+
+	/**
+	 * @depends testInstance
+	 */
+	function testGetMode()
+	{
+		$builder = $this->_getInstance();
+		$this->assertEquals('resolve', $builder->getMode());
+	}
+
+	/**
 	 * @depends testInstance
 	 */
 	function testSetContainer()
@@ -55,6 +73,26 @@ class Test_Enject_Container_Value_Type_Test
 	}
 
 	/**
+	 * @depends testInstance
+	 */
+	function testSetMode()
+	{
+		$builder = $this->_getInstance();
+		$this->assertSame($builder, $builder->setMode('resolve'));
+	}
+
+	/**
+	 * @depends testInstance
+	 */
+	function testGetModeValue()
+	{
+		$this->assertClassExists('Test_Enject_Value_Mock');
+		$builder = $this->_getInstance();
+		$builder->setType('Test_Enject_Value_Mock');
+		$this->assertEquals('default', $builder->getMode());
+	}
+
+	/**
 	 * @depends testSetType
 	 */
 	function testGetType()
@@ -67,6 +105,7 @@ class Test_Enject_Container_Value_Type_Test
 	/**
 	 * @depends testSetType
 	 * @depends testSetContainer
+	 * @depends testTargetInstance
 	 */
 	function testGetTypes()
 	{
@@ -89,6 +128,29 @@ class Test_Enject_Container_Value_Type_Test
 			 'Test_Enject_Container_Value_Type_Test' => 'Test_Enject_Container_Value_Type_Test',
 		);
 		$this->assertEquals($expected, $types);
+	}
+
+	/**
+	 * @depends testInstance
+	 * @depends testTargetInstance
+	 */
+	function testGetTypesValue()
+	{
+		$this->assertClassExists('Enject_Container_Base');
+		$target = 'Test_Enject_Value_Mock';
+		$container = new Enject_Container_Base();
+		$container->registerType('Test_Enject_Container_Value_Type_Test', $this);
+		$value = $this->_getInstance();
+		$value->setContainer($container);
+		$value->setType('Test_Enject_Target_Mock');
+		$return = $value->getTypes();
+		$expected = array(
+			'Test_Enject_Target' => 'Test_Enject_Target',
+			'Test_Enject_Target_Mock' => 'Test_Enject_Target_Mock',
+			'Test_Enject_Target_Mock_Parent' => 'Test_Enject_Target_Mock_Parent',
+			'Test_Enject_Target_Parent' => 'Test_Enject_Target_Parent',
+		);
+		$this->assertEquals($expected, $return);
 	}
 
 	/**

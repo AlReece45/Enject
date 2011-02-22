@@ -12,35 +12,26 @@
 require_once 'Enject/Container/Value.php';
 
 /**
- * Base object for commonly used functionality in the builders
+ * This {@link Enject_Value} is a base class for all
+ * {@link Enject_Container_Value}s
  */
 abstract class Enject_Container_Value_Base
 	implements Enject_Container_Value
 {
-	/**
-	 * Default mode to use when resolving objects. Currently only affects one
-	 * thing: objects that implement Enject_Value. In the default mode, it
-	 * resolves them. To return a Builder (without resolving it), use the
-	 * "builder" mode
-	 */
-	const MODE_DEFAULT = 'default';
-
-	/**
-	 * Use this mode when you want to consturct a {@link Enject_Value} without
-	 * having it resolved.
-	 */
-	const MODE_VALUE = 'value';
-
 	/**
 	 * @var Enject_Container_Base
 	 */
 	protected $_container;
 
 	/**
-	 * Mode to use for resolving objects
-	 * @var String
+	 * @var Enject_Mode_Resolver
 	 */
-	protected $_mode = self::MODE_DEFAULT;
+	protected $_resolverMode;
+
+	/**
+	 * @var Enject_Scope_Resolver
+	 */
+	protected $_resolverScope;
 
 	/**
 	 * @return Enject_Container_Base
@@ -57,13 +48,38 @@ abstract class Enject_Container_Value_Base
 	}
 
 	/**
-	 * Gets the currently set build mode
-	 * @see setMode()
-	 * @return String
+	 * @return Enject_Mode_Resolver
 	 */
-	function getMode()
+	protected function _getModeResolver()
 	{
-		return $this->_mode;
+		if(!$this->_resolverMode instanceOf Enject_Mode_Resolver)
+		{
+			require_once 'Enject/Mode/Resolver.php';
+			$this->_resolverMode = new Enject_Mode_Resolver();
+			$this->_resolverMode->setMode(Enject_Mode_Resolver::MODE_RESOLVE);
+		}
+		return $this->_resolverMode;
+	}
+
+	/**
+	 * @return Enject_Scope_Resolver
+	 */
+	protected function _getScopeResolver()
+	{
+		if(!$this->_resolverScope instanceOf Enject_Scope_Resolver)
+		{
+			require_once 'Enject/Scope/Resolver.php';
+			$this->_resolverScope = new Enject_Scope_Resolver();
+			try
+			{
+				$this->_resolverScope->setContainer($this->getContainer());
+			}
+			catch(Enject_Container_Value_ContainerUndefinedException $e)
+			{
+				// it will likely be set later
+			}
+		}
+		return $this->_resolverScope;
 	}
 
 	/**
@@ -73,32 +89,10 @@ abstract class Enject_Container_Value_Base
 	function setContainer($container)
 	{
 		$this->_container = $container;
-		return $this;
-	}
-
-	/**
-	 * Sets the resolving mode:
-	 * @see MODE_DEFAULT
-	 * @see MODE_VALUE
-	 * @return Enject_Container_Value_Base
-	 */
-	function setMode($mode)
-	{
-		$this->_mode = $mode;
-		return $this;
-	}
-
-	/**
-	 * @param Mixed $object
-	 * @return Mixed
-	 */
-	protected function _resolve($object)
-	{
-		if($object instanceOf Enject_Value
-			 && $this->getMode() != self::MODE_VALUE)
+		if($this->_resolverScope instanceOf Enject_Scope_Resolver)
 		{
-			$object = $object->resolve();
+			$this->_resolverScope->setContainer($container);
 		}
-		return $object;
+		return $this;
 	}
 }

@@ -20,7 +20,7 @@ class Test_Enject_Container_Value_Type_ValueTest
 	/**
 	 * @todo as the latest PHPUnit becomes more widespread: depend on
 	 *		{@link Test_Enject_Blueprint_Injection_Test}
-	 * @return Enject_Value_Component
+	 * @return Enject_Container_Value_Component
 	 */
 	protected function _getValue()
 	{

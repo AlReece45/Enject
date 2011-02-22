@@ -1,17 +1,18 @@
 <?php
 /*
  * Enject Library
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Enject
  */
 require_once 'Enject/Container/Value/Base.php';
 require_once 'Enject/Injection/Collection.php';
-require_once 'Enject/Scope/Listener.php';
+require_once 'Enject/Mode/Value.php';
+require_once 'Enject/Scope/Value.php';
 
 /**
  * This {@link Enject_Value} is responsible for creating AND injecting and
@@ -20,7 +21,8 @@ require_once 'Enject/Scope/Listener.php';
 class Enject_Container_Value_Builder
 	extends Enject_Container_Value_Base
 	implements Enject_Injection_Collection,
-		Enject_Scope_Listener
+		Enject_Mode_Value,
+		Enject_Scope_Value
 {
 	/**
 	 * @var String
@@ -33,33 +35,11 @@ class Enject_Container_Value_Builder
 	protected $_injectionCollection;
 
 	/**
-	 * If there is an instance of the object, and the object is shared. This
-	 * is set to the shared instance of the object.
-	 * @var Mixed[]
-	 */
-	protected $_instances = array();
-
-	/**
-	 * The scope this will use to determine whether to recreate an object or
-	 * reuse it. When {@link Enject_Container_Base::getScope()} resolves the scope
-	 * name to a {@link Enject_Scope}, then the built object will be reused.
-	 * @var String
-	 */
-	protected $_scope = 'default';
-
-	/**
 	 * Parameters used for the constructor of the injector.
 	 * @see registerParameter()
 	 * @var Mixed[]
 	 */
 	protected $_parameters = array();
-
-	/**
-	 * If there is an instance of the object, and the object is shared. This
-	 * is set to the shared instance of the object.
-	 * @var Mixed
-	 */
-	protected $_unresolvedInstance;
 
 	/**
 	 * Adds an injection (a method call with parameters)
@@ -72,20 +52,6 @@ class Enject_Container_Value_Builder
 	{
 		$this->getInjectionCollection()->addInjection($method, $parameters);
 		return $this;
-	}
-
-	/**
-	 * @param Enject_Scope $scope
-	 * @param String $oldScopeId
-	 * @see Enject_Scope_Value::cloneScope()
-	 */
-	function  cloneScope($scope, $oldScopeId)
-	{
-		if(isset($this->_instances[$oldScopeId]))
-		{
-			$instance = clone $this->_instances[$oldScopeId];
-			$this->_instances[$scope->getScopeId()] = $instance;
-		}
 	}
 
 	/**
@@ -125,6 +91,41 @@ class Enject_Container_Value_Builder
 	}
 
 	/**
+	 * @return String
+	 */
+	function getMode()
+	{
+		return $this->_getModeResolver()->getMode();
+	}
+
+	/**
+	 * Builds the objects without doing any checks on the mode.
+	 * @return Mixed
+	 */
+	function getValue()
+	{
+		// check to see if an object has been built for this scope already
+		$className = $this->getClassname();
+		$scopeResolver = $this->_getScopeResolver();
+		$return = $scopeResolver->resolve();
+
+		// if the object hasn't been built, build it and tell the scope resolver
+		if(!$return instanceOf $className)
+		{
+			require_once 'Enject/Tools.php';
+			$return = new $className;
+
+			// inject the object
+			$container = $this->getContainer();
+			$injections = $this->getInjections($container);
+			Enject_Tools::inject($container, $return, $injections);
+			$container->inject($return);
+			$scopeResolver->setValue($return);
+		}
+		return $return;
+	}
+
+	/**
 	 * Gets the injector parameters
 	 * @see registerParameter()
 	 * @uses $_parameters
@@ -140,32 +141,19 @@ class Enject_Container_Value_Builder
 	 */
 	function getScope()
 	{
-		$return = $this->_scope;
-		if(is_string($return))
-		{
-			$return = $this->getContainer()->getScope($return);
-		}
-		return $return;
+		return $this->_getScopeResolver()->getScope();
 	}
 
 	/**
+	 * Gets the types (parent classes and interfaces) associated with the
+	 * requested type.
 	 * @return String[]
+	 * @uses Enject_Tools::getModeTypes()
 	 */
 	function getTypes()
 	{
 		require_once 'Enject/Tools.php';
-		$class = new ReflectionClass($this->getClassname());
-		if($class->implementsInterface('Enject_Value')
-				 && $this->getMode() != self::MODE_VALUE)
-		{
-			// TODO: see if there is a better way to resolve this
-			$return = $this->_getUnresolvedInstance()->getTypes();
-		}
-		else
-		{
-			$return = Enject_Tools::getTypes($class);
-		}
-		return $return;
+		return Enject_Tools::getModeTypes($this, $this->getClassname());
 	}
 
 	/**
@@ -177,19 +165,14 @@ class Enject_Container_Value_Builder
 		$this->_className = $className;
 		return $this;
 	}
-
+	
 	/**
-	 * @param Boolean $shared
-	 * Sets the name of the scope to use.
-	 *
-	 * A scope determines when/where an object is recreated. The default scope
-	 * reuses all objects. The prototype scope reuses no objects
-	 * @param String $scope
-	 * @return Enject_Value_Builder
+	 * @param String $mode
+	 * @return Enject_Container_Type
 	 */
-	function setScope($scope)
+	function setMode($mode)
 	{
-		$this->_scope = $scope;
+		$this->_getModeResolver()->setMode($mode);
 		return $this;
 	}
 
@@ -201,6 +184,16 @@ class Enject_Container_Value_Builder
 	function setParameters($parameters)
 	{
 		$this->_parameters = $parameters;
+		return $this;
+	}
+
+	/**
+	 * @param String $mode
+	 * @return Enject_Container_Type
+	 */
+	function setScope($scope)
+	{
+		$this->_getScopeResolver()->setScope($scope);
 		return $this;
 	}
 
@@ -229,58 +222,16 @@ class Enject_Container_Value_Builder
 	}
 
 	/**
-	 * @param Enject_Scope $scope
-	 * @see Enject_Scope_Value::cloneScope()
-	 */
-	function removeScope($scope)
-	{
-		unset($this->_instances[$scope->getScopeId()]);
-	}
-
-	/**
+	 * Performs the actual resolation
+	 * @param Enject_Container $container
 	 * @return Mixed
-	 * @uses getInjections()
-	 * @uses Enject_Tools::inject()
+	 * @uses Enject_Container::resolveType()
 	 */
 	function resolve()
 	{
-		return $this->_resolve($this->_getUnresolvedInstance());
-	}
-
-	/**
-	 * Builds the objects without doing any checks on the mode.
-	 */
-	function _getUnresolvedInstance()
-	{
-		$container = $this->getContainer();
-		$build = true;
-		$scopeId = false;
-		$scope = $this->getScope();
-		// a scope may be any object type
-		// however, if it implements Enject_Scope, it may be reusable
-		if($scope instanceOf Enject_Scope)
-		{
-			$scopeId = $scope->getScopeId();
-			if(isset($this->_instances[$scopeId]))
-			{
-				$build = false;
-				$return = $this->_instances[$scopeId];
-			}
-		}
-		if($build)
-		{
-			require_once 'Enject/Tools.php';
-			$className = $this->getClassname();
-			$return = new $className;
-			$injections = $this->getInjections($container);
-			Enject_Tools::inject($container, $return, $injections);
-			$container->inject($return);
-			if($scope instanceOf Enject_Scope)
-			{
-				$scope->registerListener($this);
-				$this->_instances[$scopeId] = $return;
-			}
-		}
-		return $return;
+		// use the mode to resolve if needed
+		$modeResolver = $this->_getModeResolver();
+		$modeResolver->setValue($this->getValue());
+		return $modeResolver->resolve();
 	}
 }

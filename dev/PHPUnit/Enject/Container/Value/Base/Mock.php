@@ -26,20 +26,26 @@ class Test_Enject_Container_Value_Base_Mock
 	}
 
 	/**
-	 * Test the internal API
-	 * @param Mixed $object
-	 * @return Mixed
+	 * Dummy resolve() method
 	 */
-	function resolve($object = null)
+	function resolve()
 	{
-		if($object === false)
-		{
-			$return = $object;
-		}
-		else
-		{
-			$return = $this->_resolve($object);
-		}
-		return $return;
+		return null;
+	}
+
+	/**
+	 * @return Enject_Mode_Resolver
+	 */
+	function getModeResolver()
+	{
+		return $this->_getModeResolver();
+	}
+
+	/**
+	 * @return Enject_Scope_Resolver
+	 */
+	function getScopeResolver()
+	{
+		return $this->_getScopeResolver();
 	}
 }
