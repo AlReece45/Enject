@@ -18,11 +18,11 @@ abstract class Test_Enject_ValueTestCase
 	extends Test_Enject_TestCase
 {
 	/**
-	 * @param Enject_Container
+	 * @param Enject_Container_Default
 	 */
 	protected function _getContainer()
 	{
-		return new Enject_Container();
+		return new Enject_Container_Default();
 	}
 
 	/**

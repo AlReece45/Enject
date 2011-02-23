@@ -39,9 +39,9 @@ class Test_Enject_Value_Type_Test
 	 */
 	function testSetContainer()
 	{
-		$this->assertClassExists('Enject_Container');
+		$this->assertClassExists('Enject_Container_Default');
 		$builder = $this->_getInstance();
-		$return = $builder->setContainer(new Enject_Container());
+		$return = $builder->setContainer(new Enject_Container_Default());
 		$this->assertSame($builder, $return);
 	}
 
@@ -70,7 +70,7 @@ class Test_Enject_Value_Type_Test
 	 */
 	function testGetTypes()
 	{
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$container->registerType('Test_Enject_Value_Type_Test', $this);
 		$builder = $this->_getInstance();
 		$builder->setContainer($container);
@@ -98,7 +98,7 @@ class Test_Enject_Value_Type_Test
 	function testResolve()
 	{
 		$this->assertClassExists('Test_Enject_Target_Mock');
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$expected = new Test_Enject_Target_Mock();
 		$container->registerComponent('Test_Enject_Target_Mock', $expected);
 		$value = $this->_getInstance();

@@ -18,7 +18,7 @@ Usage
 -----
 
 	// create the container
-	$container = new Enject_Container();
+	$container = new Enject_Container_Default();
 
 	// define a few injections for SomeObject
 	$injector = $container->getInjector('SomeObject');
@@ -67,7 +67,7 @@ Usage
 Overview
 --------
 
-Enject_Container is the main injection object. It has several methods for 
+Enject_Container_Default is the main injection object. It has several methods for 
 registering injections as well as injecting already existing objects.
 
 Enject_Injection defines an Injection (the method and parameters to call).

@@ -11,7 +11,7 @@
  */
 
 /**
- * An Enject_Value is an indirect object. Whenever Enject_Container encounteres
+ * An Enject_Value is an indirect object. Whenever Enject_Container_Default encounteres
  * a Enject_Value, it uses the methods to get the type and resolve the value.
  */
 interface Enject_Value
@@ -24,13 +24,13 @@ interface Enject_Value
 
 	/**
 	 * Resolves the object.
-	 * @param Enject_Container $container
+	 * @param Enject_Container_Default $container
 	 * @return Mixed
 	 */
 	function resolve();
 
 	/**
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 */
 	function getContainer();
 }

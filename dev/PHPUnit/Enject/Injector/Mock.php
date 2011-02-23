@@ -13,7 +13,7 @@ require_once 'Enject/Injector.php';
 
 /*
  * Helps test the and verify the injection functionality of
- * {@link Enject_Container}
+ * {@link Enject_Container_Default}
  */
 class Test_Enject_Injector_Mock
 	implements Enject_Injector
@@ -27,7 +27,7 @@ class Test_Enject_Injector_Mock
 	}
 
 	/**
-	 * @param Enject_Container $container
+	 * @param Enject_Container_Default $container
 	 * @param Object $object
 	 */
 	function inject($container, $object)

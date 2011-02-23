@@ -40,9 +40,9 @@ class Test_Enject_Value_Component_Test
 	 */
 	function testSetContainer()
 	{
-		$this->assertClassExists('Enject_Container');
+		$this->assertClassExists('Enject_Container_Default');
 		$builder = $this->_getInstance();
-		$return = $builder->setContainer(new Enject_Container());
+		$return = $builder->setContainer(new Enject_Container_Default());
 		$this->assertSame($builder, $return);
 	}
 
@@ -71,7 +71,7 @@ class Test_Enject_Value_Component_Test
 	 */
 	function testGetTypes()
 	{
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$container->registerComponent('tests.value', $this);
 		$builder = $this->_getInstance();
 		$builder->setContainer($container);
@@ -99,7 +99,7 @@ class Test_Enject_Value_Component_Test
 	function testResolve()
 	{
 		$this->assertClassExists('Test_Enject_Target_Mock');
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$expected = new Test_Enject_Target_Mock();
 		$container->registerComponent('tests.value.mock', $expected);
 		$value = $this->_getInstance();
@@ -115,7 +115,7 @@ class Test_Enject_Value_Component_Test
 	function testResolveValue()
 	{
 		$this->assertClassExists('Test_Enject_Value_Mock');
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$target = new Test_Enject_Target_Mock();
 		$component = new Test_Enject_Value_Mock();
 		$component->setValue($target);

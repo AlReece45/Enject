@@ -21,7 +21,7 @@
  * interfaces they are useful for defining injections that aren't a part of
  * an specific injection.</p>
  */
-class Enject_Container
+class Enject_Container_Default
 {
 	/**
 	 * Available (registered) components
@@ -74,7 +74,7 @@ class Enject_Container
 	/**
 	 * Disables the creation of the default scopes.
 	 * @see getScope()
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 */
 	function disableDefaultScopes()
 	{
@@ -85,7 +85,7 @@ class Enject_Container
 	/**
 	 * Enables the creation of the default scopes (default).
 	 * @see getScope()
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 */
 	function enableDefaultScopes()
 	{
@@ -221,7 +221,7 @@ class Enject_Container
 	 * Registers a component (an easily reusable injection object)
 	 * @param String $name
 	 * @param Mixed $component
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 * @see getComponent()
 	 * @see resolveComponent()
 	 */
@@ -236,7 +236,7 @@ class Enject_Container
 	 * Registers an injector for a target type
 	 * @param $className
 	 * @param Enject_Injector $injector
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 * @see getInjector()
 	 * @see resolveInjector()x
 	 */
@@ -260,7 +260,7 @@ class Enject_Container
 	 * implement {@link Enject_Scope} allow for shared objects.
 	 * @param String $name
 	 * @param Mixed $scope
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 */
 	function registerScope($name, $scope)
 	{
@@ -277,7 +277,7 @@ class Enject_Container
 	 * @param Mixed $component
 	 * @see getComponentByType()
 	 * @uses $_types
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 */
 	function registerType($type, $value)
 	{

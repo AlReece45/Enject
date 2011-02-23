@@ -14,7 +14,7 @@ require_once 'Enject/Value/Base.php';
 
 /**
  * This {@link Enject_Value} is responsible for resolving a value to a type.
- * @see Enject_Container::getInstance()
+ * @see Enject_Container_Default::getInstance()
  */
 class Enject_Value_Type
 	extends Enject_Value_Base
@@ -52,9 +52,9 @@ class Enject_Value_Type
 
 	/**
 	 * Performs the actual resolation
-	 * @param Enject_Container $container
+	 * @param Enject_Container_Default $container
 	 * @return Mixed
-	 * @uses Enject_Container::resolveType()
+	 * @uses Enject_Container_Default::resolveType()
 	 */
 	function resolve()
 	{

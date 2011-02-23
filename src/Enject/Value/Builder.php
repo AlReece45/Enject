@@ -43,7 +43,7 @@ class Enject_Value_Builder
 
 	/**
 	 * The scope this will use to determine whether to recreate an object or
-	 * reuse it. When {@link Enject_Container::getScope()} resolves the scope
+	 * reuse it. When {@link Enject_Container_Default::getScope()} resolves the scope
 	 * name to a {@link Enject_Scope}, then the built object will be reused.
 	 * @var String
 	 */

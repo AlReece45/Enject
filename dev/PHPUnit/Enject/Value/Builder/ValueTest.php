@@ -25,11 +25,11 @@ class Test_Enject_Value_Builder_ValueTest
 	protected function _getValue()
 	{
 		$this->assertClassExists('Enject_Value_Builder');
-		$this->assertClassExists('Enject_Container');
+		$this->assertClassExists('Enject_Container_Default');
 		$this->assertClassExists('Test_Enject_Target_Mock');
 		$return = new Enject_Value_Builder();
 		$return->setClassname('Test_Enject_Target_Mock');
-		$return->setContainer(new Enject_Container());
+		$return->setContainer(new Enject_Container_Default());
 		return $return;
 	}
 }

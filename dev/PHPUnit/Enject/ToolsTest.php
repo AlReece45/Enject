@@ -119,10 +119,10 @@ class Test_Enject_ToolsTest
 	 */
 	function testInject()
 	{
-		$this->assertClassExists('Enject_Container');
+		$this->assertClassExists('Enject_Container_Default');
 		$this->assertClassExists('Enject_Injection_Default');
 		$this->_injections = array();
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$injection = new Enject_Injection_Default();;
 		$parameters = array('test1', 'test2');
 		$injection->setMethod('inject')->setParameters($parameters);
@@ -137,10 +137,10 @@ class Test_Enject_ToolsTest
 	 */
 	function testInjectMagic()
 	{
-		$this->assertClassExists('Enject_Container');
+		$this->assertClassExists('Enject_Container_Default');
 		$this->assertClassExists('Enject_Injection_Default');
 		$this->_injections = array();
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$injection = new Enject_Injection_Default();
 		$parameters = array('test1', 'test2');
 		$injection->setMethod('injectMagic')->setParameters($parameters);
@@ -156,10 +156,10 @@ class Test_Enject_ToolsTest
 	 */
 	function testInjectException()
 	{
-		$this->assertClassExists('Enject_Container');
+		$this->assertClassExists('Enject_Container_Default');
 		$this->assertClassExists('Enject_Injection_Default');
 		$this->_injections = array();
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$injection = new Enject_Injection_Default();
 		$parameters = array('test1', 'test2');
 		$injection->setMethod('injectMagic')->setParameters($parameters);
@@ -176,7 +176,7 @@ class Test_Enject_ToolsTest
 	{
 		$this->assertClassExists('Test_Enject_Value_Mock');
 		$this->_injections = array();
-		$container = new Enject_Container();
+		$container = new Enject_Container_Default();
 		$injection = new Enject_Injection_Default();
 		$value = new Test_Enject_Value_Mock();
 		$value->setValue($container);

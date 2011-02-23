@@ -48,7 +48,7 @@ class Test_Enject_Value_Mock
 	}
 
 	/**
-	 * @param Enject_Container $container
+	 * @param Enject_Container_Default $container
 	 * @return Mixed
 	 */
 	public function resolve()
@@ -57,13 +57,13 @@ class Test_Enject_Value_Mock
 	}
 
 	/**
-	 * @return Enject_Container
+	 * @return Enject_Container_Default
 	 */
 	function getContainer()
 	{
 		if(!isset($this->_container))
 		{
-			return new Enject_Container();
+			return new Enject_Container_Default();
 		}
 		return $this->_container;
 	}

@@ -21,7 +21,7 @@ interface Enject_Injection
 	function getMethod();
 
 	/**
-	 * @param Enject_Container $container
+	 * @param Enject_Container_Default $container
 	 * @return Mixed
 	 */
 	function getParameters();
