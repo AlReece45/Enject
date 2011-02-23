@@ -114,7 +114,6 @@ class Enject_Tools
 				}
 			}
 		}
-		return $object;
 	}
 
 	/**

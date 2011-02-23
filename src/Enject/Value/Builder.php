@@ -275,7 +275,7 @@ class Enject_Value_Builder
 			$className = $this->getClassname();
 			$return = new $className;
 			$injections = $this->getInjections($container);
-			$return = Enject_Tools::inject($container, $return, $injections);
+			Enject_Tools::inject($container, $return, $injections);
 			$container->inject($return);
 			if($scope instanceOf Enject_Scope)
 			{
