@@ -17,7 +17,7 @@ interface Enject_Injector
 {
 	/**
 	 * Requests the injector to inject the injector object
-	 * @param Enject_Container_Default $container
+	 * @param Enject_Container_Base $container
 	 * @param Mixed $object
 	 * @return Mixed
 	 */

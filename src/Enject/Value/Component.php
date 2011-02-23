@@ -14,7 +14,7 @@ require_once 'Enject/Value/Base.php';
 
 /**
  * This {@link Enject_Value} is responsible for refering to a Component
- * @see Enject_Container_Default::registerComponent()
+ * @see Enject_Container_Base::registerComponent()
  */
 class Enject_Value_Component
 	extends Enject_Value_Base
@@ -60,7 +60,7 @@ class Enject_Value_Component
 	}
 
 	/**
-	 * @param Enject_Container_Default $container
+	 * @param Enject_Container_Base $container
 	 * @return Mixed
 	 */
 	function resolve()

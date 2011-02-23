@@ -26,9 +26,9 @@ class Test_Enject_Value_Type_ValueTest
 	{
 		$this->assertClassExists('Test_Enject_Target_Mock');
 		$this->assertClassExists('Enject_Value_Type');
-		$this->assertClassExists('Enject_Container_Default');
+		$this->assertClassExists('Enject_Container_Base');
 		$value = new Test_Enject_Target_Mock();
-		$container = new Enject_Container_Default();
+		$container = new Enject_Container_Base();
 		$container->registerType('Test_Enject_Target_Mock', $value);
 		$return = new Enject_Value_Type();
 		$return->setType('Test_Enject_Target_Mock');

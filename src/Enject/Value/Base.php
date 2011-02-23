@@ -30,7 +30,7 @@ abstract class Enject_Value_Base
 	const MODE_VALUE = 'value';
 
 	/**
-	 * @var Enject_Container_Default
+	 * @var Enject_Container_Base
 	 */
 	protected $_container;
 
@@ -41,11 +41,11 @@ abstract class Enject_Value_Base
 	protected $_mode = self::MODE_DEFAULT;
 
 	/**
-	 * @return Enject_Container_Default
+	 * @return Enject_Container_Base
 	 */
 	function getContainer()
 	{
-		if(!$this->_container instanceOf Enject_Container_Default)
+		if(!$this->_container instanceOf Enject_Container_Base)
 		{
 			require_once 'Enject/Exception.php';
 			throw new Enject_Exception('Container not set');
@@ -64,7 +64,7 @@ abstract class Enject_Value_Base
 	}
 
 	/**
-	 * @param Enject_Container_Default $component
+	 * @param Enject_Container_Base $component
 	 * @return Enject_Value_Base
 	 */
 	function setContainer($container)

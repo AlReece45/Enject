@@ -67,9 +67,9 @@ class Test_Enject_Value_BaseTest
 	 */
 	function testSetContainer()
 	{
-		$this->assertClassExists('Enject_Container_Default');
+		$this->assertClassExists('Enject_Container_Base');
 		$builder = $this->_getInstance();
-		$container = $builder->setContainer(new Enject_Container_Default());
+		$container = $builder->setContainer(new Enject_Container_Base());
 		$this->assertSame($builder, $container);
 	}
 
@@ -113,7 +113,7 @@ class Test_Enject_Value_BaseTest
 	function testGetContainer()
 	{
 		$builder = $this->_getInstance();
-		$container = new Enject_Container_Default();
+		$container = new Enject_Container_Base();
 		$builder->setContainer($container);
 		$this->assertSame($container, $builder->getContainer());
 	}
