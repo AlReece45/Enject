@@ -1,11 +1,11 @@
 <?php
 /*
  * Enject Library
- * Copyright 2010 Alexander Reece
+ * Copyright 2010-2011 Alexander Reece
  * Licensed under: GNU Lesser Public License 2.1 or later
  *//**
  * @author Alexander Reece <alreece45@gmail.com>
- * @copyright 2010 (c) Alexander Reece
+ * @copyright 2010-2011 (c) Alexander Reece
  * @license http://www.opensource.org/licenses/lgpl-2.1.php
  * @package Test_Enject
  */
@@ -16,161 +16,184 @@ require_once 'Enject/TestCase.php';
 class Test_Enject_ToolsTest
 	extends Test_Enject_TestCase
 {
-	protected $_injections = array();
-
-	function __call($method, $parameters)
-	{
-		$this->_injections[] = $parameters;
-	}
-
-	function method($argumentA, $argumentB, $argumentC, $argumentD = 'yes')
-	{}
-
-	function singleMethod($single)
-	{}
-
-	function inject()
-	{
-		$this->_injections[] = func_get_args();
-	}
-
+	/**
+	 * Ensures the class Enject_Tools exists
+	 */
 	function testClass()
 	{
 		$this->assertClassExists('Enject_Tools');
 	}
 
 	/**
+	 * Ensures that the container class is available for other tests
+	 */
+	function testContainerInstance()
+	{
+		$this->assertClassExists('Enject_Container_Base');
+		$container = new Enject_Container_Base();
+	}
+
+	/**
+	 * Ensures that the target class is available for other tests
+	 */
+	function testTargetInstance()
+	{
+		$this->assertClassExists('Test_Enject_Target_Mock');
+		$target = new Test_Enject_Target_Mock();
+	}
+
+	/**
+	 * Ensures the injection class is available for other tests
+	 */
+	function testInjectionInstance()
+	{
+		$this->assertClassExists('Enject_Injection_Default');
+		$injection = new Enject_Injection_Default();
+	}
+
+	/**
+	 * Ensures the value class is available for other tests
+	 */
+	function testValueInstance()
+	{
+		$this->assertClassExists('Test_Enject_Value_Mock');
+		$value = new Test_Enject_Value_Mock();
+	}
+
+	/**
 	 * @depends testClass
+	 * @depends testTargetInstance
 	 */
 	function testPrepareArguments()
 	{
+		$expected = array('testA', 'testB', 'testC');
 		$parameters = array(
-			 'argumentC' => 'testC',
-			 'argumentB' => 'testB',
-			 'argumentA' => 'testA',
+			 'c' => 'testC',
+			 'b' => 'testB',
+			 'a' => 'testA',
 		);
-		$method = new ReflectionMethod($this, 'method');;
-		$results = Enject_Tools::prepareArguments($method, $parameters);
-		$this->assertEquals(3, count($results));
-		$this->assertEquals($parameters['argumentA'], $results[0]);
-		$this->assertEquals($parameters['argumentB'], $results[1]);
-		$this->assertEquals($parameters['argumentC'], $results[2]);
+		$target = new Test_Enject_Target_Mock();
+		$method = new ReflectionMethod($target, 'testMethod');
+		$return = Enject_Tools::prepareArguments($method, $parameters);
+		$this->assertEquals($expected, $return);
 	}
 
 	/**
 	 * @depends testClass
+	 * @depends testTargetInstance
 	 */
 	function testPrepareArgumentsOptional()
 	{
+		$expected = array('testA', 'testB');
 		$parameters = array(
-			 'argumentC' => 'testC',
-			 'argumentB' => 'testB',
-			 'argumentA' => 'testA',
-			 'argumentD' => 'testD',
+			 'b' => 'testB',
+			 'a' => 'testA',
 		);
-		$method = new ReflectionMethod($this, 'method');;
-		$results = Enject_Tools::prepareArguments($method, $parameters);
-		$this->assertEquals(4, count($results));
-		$this->assertEquals($parameters['argumentA'], $results[0]);
-		$this->assertEquals($parameters['argumentB'], $results[1]);
-		$this->assertEquals($parameters['argumentC'], $results[2]);
-		$this->assertEquals($parameters['argumentD'], $results[3]);
+		$target = new Test_Enject_Target_Mock();
+		$method = new ReflectionMethod($target, 'testMethod2');
+		$return = Enject_Tools::prepareArguments($method, $parameters);
+		$this->assertEquals($expected, $return);
 	}
 
 	/**
 	 * @depends testClass
+	 * @depends testTargetInstance
 	 */
 	function testPrepareArgumentsSingle()
 	{
 		$parameters = array('single' => 'testFF');
-		$method = new ReflectionMethod($this, 'singleMethod');;
-		$results = Enject_Tools::prepareArguments($method, $parameters);
-		$this->assertEquals('testFF', $results[0]);
+		$target = new Test_Enject_Target_Mock();
+		$expected = array_values($parameters);
+		$method = new ReflectionMethod($target, 'isProperty');
+		$return = Enject_Tools::prepareArguments($method, $parameters);
+		$this->assertEquals($expected, $return);
 	}
 
 	/**
 	 * @depends testClass
+	 * @depends testTargetInstance
 	 */
 	function testPrepareArgumentsPassthrough()
 	{
 		$parameters = array('testC');
-		$method = new ReflectionMethod($this, 'method');;
+		$target = new Test_Enject_Target_Mock();
+		$method = new ReflectionMethod($target, 'testMethod');;
 		$results = Enject_Tools::prepareArguments($method, $parameters);
 		$this->assertEquals($parameters, $results);
 	}
 
 	/**
 	 * @depends testClass
+	 * @depends testTargetInstance
 	 * @expectedException Enject_Exception
 	 */
 	function testPrepareArgumentsException()
 	{
 		$parameters = array(
-			 'argumentC' => 'testC',
-			 'argumentB' => 'testB',
+			 'b' => 'testC',
+			 'c' => 'testB',
 		);
-		$method = new ReflectionMethod($this, 'method');;
-		$results = Enject_Tools::prepareArguments($method, $parameters);
-		$this->assertEquals($parameters, $results);
+		$target = new Test_Enject_Target_Mock();
+		$method = new ReflectionMethod($target, 'testMethod1');
+		Enject_Tools::prepareArguments($method, $parameters);
 	}
 
 	/**
 	 * @depends testClass
+	 * @depends testContainerInstance
+	 * @depends testInjectionInstance
+	 * @depends testTargetInstance
 	 */
 	function testInject()
 	{
-		$this->assertClassExists('Enject_Container_Base');
-		$this->assertClassExists('Enject_Injection_Default');
-		$this->_injections = array();
 		$container = new Enject_Container_Base();
-		$injection = new Enject_Injection_Default();;
+		$injection = new Enject_Injection_Default();
+		$target = new Test_Enject_Target_Mock();
 		$parameters = array('test1', 'test2');
-		$injection->setMethod('inject')->setParameters($parameters);
-		$this->_injections = array();
-		Enject_Tools::inject($container, $this, array($injection));
-		$expected = array($parameters);
-		$this->assertEquals($expected, $this->_injections);
+		$injection->setMethod('testMethod')->setParameters($parameters);
+		Enject_Tools::inject($container, $target, array($injection));
+		$this->assertEquals($parameters, $target->getParameters('testMethod'));
 	}
 
 	/**
 	 * @depends testClass
+	 * @depends testContainerInstance
+	 * @depends testInjectionInstance
+	 * @depends testTargetInstance
 	 */
 	function testInjectMagic()
 	{
-		$this->assertClassExists('Enject_Container_Base');
-		$this->assertClassExists('Enject_Injection_Default');
-		$this->_injections = array();
 		$container = new Enject_Container_Base();
 		$injection = new Enject_Injection_Default();
+		$target = new Test_Enject_Target_Mock();
 		$parameters = array('test1', 'test2');
 		$injection->setMethod('injectMagic')->setParameters($parameters);
-		$this->_injections = array();
-		Enject_Tools::inject($container, $this, array($injection));
-		$expected = array($parameters);
-		$this->assertEquals($expected, $this->_injections);
+		Enject_Tools::inject($container, $target, array($injection));
+		$this->assertEquals($parameters, $target->getParameters('injectMagic'));
 	}
 
 	/**
 	 * @depends testClass
+	 * @depends testContainerInstance
+	 * @depends testInjectionInstance
 	 * @expectedException ReflectionException
 	 */
 	function testInjectException()
 	{
-		$this->assertClassExists('Enject_Container_Base');
-		$this->assertClassExists('Enject_Injection_Default');
 		$this->_injections = array();
 		$container = new Enject_Container_Base();
 		$injection = new Enject_Injection_Default();
 		$parameters = array('test1', 'test2');
-		$injection->setMethod('injectMagic')->setParameters($parameters);
+		$injection->setMethod('undefinedMethod')->setParameters($parameters);
 		$this->_injections = array();
-		Enject_Tools::inject($container, $injection, array($injection));
+		Enject_Tools::inject($container, $this, array($injection));
 		$expected = array($parameters);
 		$this->assertEquals($expected, $this->_injections);
 	}
 
 	/**
 	 * @depends testInject
+	 * @depends testValueInstance
 	 */
 	function testInjectValue()
 	{
@@ -178,14 +201,15 @@ class Test_Enject_ToolsTest
 		$this->_injections = array();
 		$container = new Enject_Container_Base();
 		$injection = new Enject_Injection_Default();
+		$target = new Test_Enject_Target_Mock();
 		$value = new Test_Enject_Value_Mock();
 		$value->setValue($container);
 		$parameters = array($value);
 		$injection->setMethod('inject')->setParameters($parameters);
 		$this->_injections = array();
-		Enject_Tools::inject($container, $this, array($injection));
-		$expected = array(array($container));
-		$this->assertEquals($expected, $this->_injections);
+		Enject_Tools::inject($container, $target, array($injection));
+		$expected = array($container);
+		$this->assertEquals($expected, $target->getParameters('inject'));
 	}
 
 
