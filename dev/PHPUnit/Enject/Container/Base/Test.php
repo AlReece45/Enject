@@ -265,9 +265,8 @@ class Test_Enject_Container_Base_Test
 		$injector->registerProperty('test', 'testValue');
 		$target = new Test_Enject_Target_Mock();
 		$container->inject($target);
-		$properties = $target->getProperties();
-		$this->assertTrue(isset($properties['test']));
-		$this->assertEquals('testValue', $properties['test']);
+		$this->assertTrue($target->isProperty('test'));
+		$this->assertEquals('testValue', $target->getProperty('test'));
 	}
 
 	/**
